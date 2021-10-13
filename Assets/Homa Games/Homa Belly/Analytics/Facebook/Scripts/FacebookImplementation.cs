@@ -228,7 +228,6 @@ namespace HomaGames.HomaBelly
         /// <param name="parameters"></param>
         private void LogAppEvent(string eventName, float eventValue, Dictionary<string, object> parameters = null)
         {
-            return;
             Sanitize(ref eventName);
             if (FB.IsInitialized)
             {

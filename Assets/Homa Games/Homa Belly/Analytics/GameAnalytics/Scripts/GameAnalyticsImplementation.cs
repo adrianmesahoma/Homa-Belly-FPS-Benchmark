@@ -178,7 +178,6 @@ namespace HomaGames.HomaBelly
 
         public void TrackDesignEvent(string eventName, float eventValue = 0f)
         {
-            return;
             if (GAValidator.ValidateDesignEvent(eventName))
             {
                 GameAnalytics.NewDesignEvent(eventName, eventValue);
