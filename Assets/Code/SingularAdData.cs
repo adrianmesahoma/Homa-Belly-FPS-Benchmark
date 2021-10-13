@@ -114,7 +114,13 @@ public class SingularAdData : Dictionary<string, object> {
 
     private void SetValue(string key, object value) {
         try {
-            if (value == null || value.ToString().Trim() == string.Empty) {
+            
+            // This should improve performance in a Galaxy s9 tracking i get 2ms just using SingularData constructor
+            // if (value == null || value.ToString().Trim() == string.Empty) {
+            //     return;
+            // }
+            
+            if (value == null) {
                 return;
             }
 
