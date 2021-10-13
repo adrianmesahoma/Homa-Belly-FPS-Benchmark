@@ -42,6 +42,8 @@ namespace GameAnalyticsSDK
 
         private static GameAnalytics _instance;
 
+        public static GameAnalytics Instance => _instance;
+
         #endregion
 
         private static bool _hasInitializeBeenCalled;

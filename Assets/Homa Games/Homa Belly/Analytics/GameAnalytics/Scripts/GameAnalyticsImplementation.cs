@@ -178,7 +178,9 @@ namespace HomaGames.HomaBelly
 
         public void TrackDesignEvent(string eventName, float eventValue = 0f)
         {
-            if (GAValidator.ValidateDesignEvent(eventName))
+            // Optimization: Validate design event is done inside GameAnalytics
+            // we can save some milliseconds 
+            //if (GAValidator.ValidateDesignEvent(eventName))
             {
                 GameAnalytics.NewDesignEvent(eventName, eventValue);
             }

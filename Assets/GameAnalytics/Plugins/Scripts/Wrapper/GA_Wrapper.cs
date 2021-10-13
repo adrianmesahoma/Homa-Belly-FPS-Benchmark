@@ -2,6 +2,7 @@ using UnityEngine;
 using System.Collections;
 using GameAnalyticsSDK.Validators;
 using System.Collections.Generic;
+using CielaSpike;
 using GameAnalyticsSDK.Utilities;
 
 namespace GameAnalyticsSDK.Wrapper
@@ -519,7 +520,14 @@ namespace GameAnalyticsSDK.Wrapper
 
         public static void AddDesignEvent (string eventID, float eventValue, IDictionary<string, object> fields)
         {
+            GameAnalytics.Instance.StartCoroutineAsync(AddDesignEventWithValueAsync(eventID,eventValue,fields));
+        }
+
+        private static IEnumerator AddDesignEventWithValueAsync(string eventID,float eventValue, IDictionary<string, object> fields)
+        {
             string fieldsAsString = DictionaryToJsonString(fields);
+            
+            yield return Ninja.JumpToUnity;
 #if UNITY_EDITOR
             if (GAValidator.ValidateDesignEvent (eventID)) {
                 addDesignEventWithValue (eventID, eventValue, fieldsAsString);
@@ -527,18 +535,28 @@ namespace GameAnalyticsSDK.Wrapper
 #else
                 addDesignEventWithValue (eventID, eventValue, fieldsAsString);
 #endif
+            yield break;
         }
 
         public static void AddDesignEvent (string eventID, IDictionary<string, object> fields)
         {
+            GameAnalytics.Instance.StartCoroutineAsync(AddDesignEventAsync(eventID,fields));
+        }
+
+        private static IEnumerator AddDesignEventAsync(string eventID, IDictionary<string, object> fields)
+        {
             string fieldsAsString = DictionaryToJsonString(fields);
+
+            yield return Ninja.JumpToUnity;
 #if UNITY_EDITOR
             if (GAValidator.ValidateDesignEvent (eventID)) {
                 addDesignEvent (eventID, fieldsAsString);
             }
 #else
-                addDesignEvent (eventID, fieldsAsString);
+            addDesignEvent (eventID, fieldsAsString);
 #endif
+            
+            yield break;
         }
 
         public static void AddErrorEvent (GAErrorSeverity severity, string message, IDictionary<string, object> fields)
