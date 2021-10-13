@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using HomaGames.HomaBelly;
 using UnityEngine;
 using CielaSpike;
+using Facebook.Unity;
+using GameAnalyticsSDK.Events;
 using Newtonsoft.Json;
 
 public class PerformanceController : MonoBehaviour
@@ -72,6 +74,13 @@ public class PerformanceController : MonoBehaviour
         Debug.Log("Create Android java object: "+json);
         Debug.Log("Access to status");
         Debug.Log("Status: "+status);
+        
+        Debug.Log("Game Analytics Event");
+        var tempDictionary = new Dictionary<string, object>() {{"Key1", "hola"}, {"Key2", 10}};
+        GA_Design.NewEvent("DummyEvent", 99f,tempDictionary );
+        //Debug.Log("Facebook Event");
+        //FB.LogAppEvent("DummyEvent", 99f, tempDictionary);
+        
         yield return Ninja.JumpToUnity;
         AndroidJavaObject androidJavaObject = new AndroidJavaObject("org.json.JSONObject", json);
 
