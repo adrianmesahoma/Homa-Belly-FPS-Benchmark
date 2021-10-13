@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Diagnostics;
+using UnityEngine;
 
 namespace HomaGames.HomaBelly
 {
@@ -17,6 +18,7 @@ namespace HomaGames.HomaBelly
         /// Logs a message with Debug severity
         /// </summary>
         /// <param name="message"></param>
+        [Conditional("ENABLE_LOGS")]
         public static void Debug(string message)
 		{
             if (debugEnabled)

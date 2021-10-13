@@ -1,4 +1,5 @@
-using UnityEngine;
+using System.Diagnostics;
+using Debug = UnityEngine.Debug;
 
 public class MaxSdkLogger
 {
@@ -8,6 +9,7 @@ public class MaxSdkLogger
     /// <summary>
     /// Log debug messages.
     /// </summary>
+    [Conditional("ENABLE_LOGS")]
     public static void UserDebug(string message)
     {
         Debug.Log("Debug [" + SdkTag + "] " + message);
@@ -18,6 +20,7 @@ public class MaxSdkLogger
     ///
     /// Verbose logging can be enabled by calling <see cref="MaxSdk.SetVerboseLogging"/> or via the Integration Manager for build time logs.
     /// </summary>
+    [Conditional("ENABLE_LOGS")]
     public static void D(string message)
     {
         if (MaxSdk.IsVerboseLoggingEnabled())
