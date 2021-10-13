@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 
 using Newtonsoft.Json;
 using System;
+using CielaSpike;
 #if UNITY_5_3_OR_NEWER && UNITY_PURCHASING
 using UnityEngine.Purchasing;
 #endif
@@ -586,7 +587,9 @@ public class SingularSDK : MonoBehaviour {
 	  string, int, long, float, double, null, ArrayList, Dictionary<String,object>
 	*/
     public static void Event(Dictionary<string, object> args, string name) {
-        Debug.Log(string.Format("SingularSDK Event: args JSON={0}", JsonConvert.SerializeObject(args, Formatting.None)));
+        
+        // Optimization: This log is too expensive because is serializing the args Dicitonary
+        //Debug.Log(string.Format("SingularSDK Event: args JSON={0}", JsonConvert.SerializeObject(args, Formatting.None)));
 
         if (!Initialized)
             return;
@@ -632,12 +635,21 @@ public class SingularSDK : MonoBehaviour {
             Free_NSDictionary();
             Free_NSMasterArray();
 #elif UNITY_ANDROID
-            AndroidJavaObject json = new AndroidJavaObject("org.json.JSONObject", JsonConvert.SerializeObject(args, Formatting.None));
-
-            if (singular != null) {
-                status = singular.CallStatic<bool>("eventJSON", name, json);
-            }
+            // Optimization: Moved Android track event to a coroutine
+            instance.StartCoroutineAsync(instance.AndroidTrackEventCoroutine(args,name));
 #endif
+
+        }
+    }
+
+    private IEnumerator AndroidTrackEventCoroutine(Dictionary<string, object> args,string name)
+    {
+        var serializeObject = JsonConvert.SerializeObject(args, Formatting.None);
+        yield return Ninja.JumpToUnity;
+        // Note: AndroidJavaObject crashes the application if done in another thread
+        AndroidJavaObject json = new AndroidJavaObject("org.json.JSONObject", serializeObject);
+        if (singular != null) {
+            status = singular.CallStatic<bool>("eventJSON", name, json);
         }
     }
 
