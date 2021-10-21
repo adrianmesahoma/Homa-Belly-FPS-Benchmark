@@ -3,10 +3,10 @@ using System.Text;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-
 using Newtonsoft.Json;
 using System;
 using CielaSpike;
+using System.Threading;
 #if UNITY_5_3_OR_NEWER && UNITY_PURCHASING
 using UnityEngine.Purchasing;
 #endif
@@ -586,7 +586,7 @@ public class SingularSDK : MonoBehaviour {
 	the elements in the ArrayList and values in the Dictionary must have one of these types:
 	  string, int, long, float, double, null, ArrayList, Dictionary<String,object>
 	*/
-    public static void Event(Dictionary<string, object> args, string name) {
+    public static async void Event(Dictionary<string, object> args, string name) {
         
         // Optimization: This log is too expensive because is serializing the args Dicitonary
         //Debug.Log(string.Format("SingularSDK Event: args JSON={0}", JsonConvert.SerializeObject(args, Formatting.None)));
@@ -596,44 +596,49 @@ public class SingularSDK : MonoBehaviour {
 
         if (!Application.isEditor) {
 #if UNITY_IOS
-            Init_NSDictionary();
-            Init_NSMasterArray();
+            await System.Threading.Tasks.Task.Run(delegate
+            {
+                Init_NSDictionary();
+                Init_NSMasterArray();
 
-            Dictionary<string, object>.Enumerator enumerator = args.GetEnumerator();
+                Dictionary<string, object>.Enumerator enumerator = args.GetEnumerator();
 
-            while (enumerator.MoveNext()) {
-                NSType type = NSType.STRING;
+                while (enumerator.MoveNext()) {
+                    NSType type = NSType.STRING;
 
-                if (enumerator.Current.Value == null) {
-                    type = NSType.NULL;
-                    Push_NSDictionary(enumerator.Current.Key, "", (int)type);
-                } else {
-                    System.Type valueType = enumerator.Current.Value.GetType();
+                    if (enumerator.Current.Value == null) {
+                        type = NSType.NULL;
+                        Push_NSDictionary(enumerator.Current.Key, "", (int)type);
+                    } else {
+                        System.Type valueType = enumerator.Current.Value.GetType();
 
-                    if (valueType == typeof(int)) {
-                        type = NSType.INT;
-                    } else if (valueType == typeof(long)) {
-                        type = NSType.LONG;
-                    } else if (valueType == typeof(float)) {
-                        type = NSType.FLOAT;
-                    } else if (valueType == typeof(double)) {
-                        type = NSType.DOUBLE;
-                    } else if (valueType == typeof(Dictionary<string, object>)) {
-                        type = NSType.DICTIONARY;
-                        CreateDictionary(-1, NSType.DICTIONARY, enumerator.Current.Key, (Dictionary<string, object>)enumerator.Current.Value);
-                    } else if (valueType == typeof(ArrayList)) {
-                        type = NSType.ARRAY;
-                        CreateArray(-1, NSType.DICTIONARY, enumerator.Current.Key, (ArrayList)enumerator.Current.Value);
-                    }
-                    if ((int)type < (int)NSType.ARRAY) {
-                        Push_NSDictionary(enumerator.Current.Key, enumerator.Current.Value.ToString(), (int)type);
+                        if (valueType == typeof(int)) {
+                            type = NSType.INT;
+                        } else if (valueType == typeof(long)) {
+                            type = NSType.LONG;
+                        } else if (valueType == typeof(float)) {
+                            type = NSType.FLOAT;
+                        } else if (valueType == typeof(double)) {
+                            type = NSType.DOUBLE;
+                        } else if (valueType == typeof(Dictionary<string, object>)) {
+                            type = NSType.DICTIONARY;
+                            CreateDictionary(-1, NSType.DICTIONARY, enumerator.Current.Key, (Dictionary<string, object>)enumerator.Current.Value);
+                        } else if (valueType == typeof(ArrayList)) {
+                            type = NSType.ARRAY;
+                            CreateArray(-1, NSType.DICTIONARY, enumerator.Current.Key, (ArrayList)enumerator.Current.Value);
+                        }
+                        if ((int)type < (int)NSType.ARRAY) {
+                            Push_NSDictionary(enumerator.Current.Key, enumerator.Current.Value.ToString(), (int)type);
+                        }
                     }
                 }
-            }
-
-            SendEventWithArgs(name);
-            Free_NSDictionary();
-            Free_NSMasterArray();
+                
+                SendEventWithArgs(name);
+                
+                Free_NSDictionary();
+                Free_NSMasterArray();
+            });
+            
 #elif UNITY_ANDROID
             // Optimization: Moved Android track event to a coroutine
             instance.StartCoroutineAsync(instance.AndroidTrackEventCoroutine(args,name));
@@ -642,6 +647,7 @@ public class SingularSDK : MonoBehaviour {
         }
     }
 
+#if UNITY_ANDROID
     private IEnumerator AndroidTrackEventCoroutine(Dictionary<string, object> args,string name)
     {
         var serializeObject = JsonConvert.SerializeObject(args, Formatting.None);
@@ -652,6 +658,7 @@ public class SingularSDK : MonoBehaviour {
             status = singular.CallStatic<bool>("eventJSON", name, json);
         }
     }
+#endif
 
     /* 
 	allowed argumenst are: string, int, long, float, double, null, ArrayList, Dictionary<String,object>
