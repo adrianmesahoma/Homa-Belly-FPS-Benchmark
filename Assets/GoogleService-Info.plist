@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>75925695222-jevt2favfl1vjrbbqenue286lqlp13vi.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.75925695222-jevt2favfl1vjrbbqenue286lqlp13vi</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBtYCMbZQSPRpz2yC6LeIg-L4E4xWreFB8</string>
+	<key>GCM_SENDER_ID</key>
+	<string>75925695222</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.nagastudio.attack.titan</string>
+	<key>PROJECT_ID</key>
+	<string>attack-on-giants</string>
+	<key>STORAGE_BUCKET</key>
+	<string>attack-on-giants.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:75925695222:ios:80068a7c7d2db17ab85ad7</string>
+</dict>
+</plist>
