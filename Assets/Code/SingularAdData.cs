@@ -28,6 +28,7 @@ public class SingularAdData : Dictionary<string, object> {
     private const string IS_REVENUE_EVENT_KEY = "is_revenue_event";
     private const string REVENUE_AMOUNT_KEY = "r";
     private const string REVENUE_CURRENCY_KEY = "pcc";
+    private static readonly CultureInfo FIXED_CULTURE = new CultureInfo("en-US");
 
     private readonly string[] RequiredParams = new string[]{
             ADMON_AD_PLATFORM,
@@ -40,7 +41,7 @@ public class SingularAdData : Dictionary<string, object> {
         SetValue(REVENUE_CURRENCY_KEY, currency);
 
         // Enforcing decimal separator as Dot "." . Because different regions have different decimal serparators e.g. Comma, Space
-        decimal parsedRevenue = Convert.ToDecimal(revenue, new CultureInfo("en-US"));
+        decimal parsedRevenue = Convert.ToDecimal(revenue,FIXED_CULTURE);
         SetValue(ADMON_REVENUE, parsedRevenue);
         SetValue(REVENUE_AMOUNT_KEY, parsedRevenue);
 
@@ -127,10 +128,24 @@ public class SingularAdData : Dictionary<string, object> {
             this[key] = value;
         } catch (Exception) { }
     }
+    
+    private void SetValue(string key, string value) {
+        try {
+
+            if (string.IsNullOrWhiteSpace(value)) {
+                return;
+            }
+
+            this[key] = value;
+        } catch (Exception) { }
+    }
 
     public bool HasRequiredParams() {
         foreach (var key in RequiredParams) {
-            if (!ContainsKey(key) || this[key] == null || this[key].ToString().Trim() == string.Empty) {
+            // Optimization: We have already checked the value is valid each time we we have done a SetValue
+            // so the only possibility is a null value if it wasn't valid when the set was call
+            //if (!ContainsKey(key) || this[key] == null || this[key].ToString().Trim() == string.Empty) {
+            if (!ContainsKey(key) || this[key] == null) {
                 return false;
             }
         }
