@@ -86,4 +86,9 @@ public class PerformanceController : MonoBehaviour
 
         yield break;
     }
+
+    public void GPDRTest()
+    {
+        HomaGames.GDPR.Manager.Instance.Show(true,false);
+    }
 }
