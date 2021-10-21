@@ -273,10 +273,10 @@ namespace HomaGames.HomaBelly
                 HomaBelly.Instance.TrackDesignEvent("Banners:Clicked");
             };
 
-            Events.onBannerAdLoadedEvent += (id) =>
+            /*Events.onBannerAdLoadedEvent += (id) =>
             {
                 HomaBelly.Instance.TrackDesignEvent("Banners:Loaded");
-            };
+            };*/
 
             Events.onBannerAdLoadFailedEvent += (id) =>
             {
