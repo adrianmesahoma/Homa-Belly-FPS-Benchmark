@@ -7,6 +7,7 @@ using GameAnalyticsSDK.Setup;
 using GameAnalyticsSDK.Wrapper;
 using GameAnalyticsSDK.State;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 #if UNITY_EDITOR
 using UnityEditor;
@@ -172,11 +173,13 @@ namespace GameAnalyticsSDK
             }
         }
 
-        private static void InternalInitialize()
+        private static async void InternalInitialize(RuntimePlatform platform, string unityVersion, string applicationVersion)
         {
-            if(!Application.isPlaying)
-                return; // no need to setup anything else if we are in the editor and not playing
+            /*if(!Application.isPlaying)
+                return; // no need to setup anything else if we are in the editor and not playing*/
 
+            int platformIndex = -1;
+            
             if(SettingsGA.InfoLogBuild)
             {
                 GA_Setup.SetInfoLog(true);
@@ -186,18 +189,19 @@ namespace GameAnalyticsSDK
             {
                 GA_Setup.SetVerboseLog(true);
             }
-
-            int platformIndex = GetPlatformIndex();
-
+                
+            var unityVersionForGA = GetUnityVersion(unityVersion);
+            platformIndex = GetPlatformIndex(platform);
+                
             GA_Wrapper.SetUnitySdkVersion("unity " + GameAnalyticsSDK.Setup.Settings.VERSION);
-            GA_Wrapper.SetUnityEngineVersion("unity " + GetUnityVersion());
+            GA_Wrapper.SetUnityEngineVersion("unity " + unityVersionForGA);
 
             if(platformIndex >= 0)
             {
                 if (GameAnalytics.SettingsGA.UsePlayerSettingsBuildNumber) {
                     for (int i = 0; i < GameAnalytics.SettingsGA.Platforms.Count; ++i) {
                         if (GameAnalytics.SettingsGA.Platforms [i] == RuntimePlatform.Android || GameAnalytics.SettingsGA.Platforms [i] == RuntimePlatform.IPhonePlayer) {
-                            GameAnalytics.SettingsGA.Build [i] = Application.version;
+                            GameAnalytics.SettingsGA.Build [i] = applicationVersion;
                         }
                     }
                     if (GameAnalytics.SettingsGA.Platforms [platformIndex] == RuntimePlatform.Android || GameAnalytics.SettingsGA.Platforms [platformIndex] == RuntimePlatform.IPhonePlayer)
@@ -246,21 +250,33 @@ namespace GameAnalyticsSDK
             }
         }
 
-        public static void Initialize ()
+        public static async void Initialize ()
         {
-            InternalInitialize();
-            int platformIndex = GetPlatformIndex();
+            RuntimePlatform platform = Application.platform;
+            var unityVersion = Application.unityVersion;
+            var version = Application.version;
+            var dummy = GameAnalytics.SettingsGA;
+            await Task.Run(delegate
+            {
+                AndroidJNI.AttachCurrentThread();
+                
+                InternalInitialize(platform,unityVersion,version);
+                
+                int platformIndex = GetPlatformIndex(platform);
 
-            if(platformIndex >= 0)
-            {
-                GA_Wrapper.Initialize (SettingsGA.GetGameKey (platformIndex), SettingsGA.GetSecretKey (platformIndex));
-                GameAnalytics._hasInitializeBeenCalled = true;
-            }
-            else
-            {
-                GameAnalytics._hasInitializeBeenCalled = true;
-                Debug.LogWarning("GameAnalytics: Unsupported platform (events will not be sent in editor; or missing platform in settings): " + Application.platform);
-            }
+                if(platformIndex >= 0)
+                {
+                    GA_Wrapper.Initialize (SettingsGA.GetGameKey (platformIndex), SettingsGA.GetSecretKey (platformIndex));
+                    GameAnalytics._hasInitializeBeenCalled = true;
+                }
+                else
+                {
+                    GameAnalytics._hasInitializeBeenCalled = true;
+                    Debug.LogWarning("GameAnalytics: Unsupported platform (events will not be sent in editor; or missing platform in settings): " + Application.platform);
+                }
+                
+                AndroidJNI.DetachCurrentThread();
+            });
         }
 
         /// <summary>
@@ -704,39 +720,37 @@ namespace GameAnalyticsSDK
 #endif
         }
 
-        private static string GetUnityVersion()
+        private static string GetUnityVersion(string unityVersion)
         {
-            string unityVersion = "";
-            string[] splitUnityVersion = Application.unityVersion.Split('.');
+            string unityVersionForGA = "";
+            string[] splitUnityVersion = unityVersionForGA.Split('.');
             for(int i = 0; i < splitUnityVersion.Length; i++)
             {
                 int result;
                 if(int.TryParse(splitUnityVersion[i], out result))
                 {
                     if(i == 0)
-                        unityVersion = splitUnityVersion[i];
+                        unityVersionForGA = splitUnityVersion[i];
                     else
-                        unityVersion += "." + splitUnityVersion[i];
+                        unityVersionForGA += "." + splitUnityVersion[i];
                 }
                 else
                 {
                     string[] regexVersion = System.Text.RegularExpressions.Regex.Split(splitUnityVersion[i], "[^\\d]+");
                     if(regexVersion.Length > 0 && int.TryParse(regexVersion[0], out result))
                     {
-                        unityVersion += "." + regexVersion[0];
+                        unityVersionForGA += "." + regexVersion[0];
                     }
                 }
             }
 
-            return unityVersion;
+            return unityVersionForGA;
         }
 
-        private static int GetPlatformIndex()
+        private static int GetPlatformIndex(RuntimePlatform platform)
         {
             int result = -1;
-
-            RuntimePlatform platform = Application.platform;
-
+            
             if(platform == RuntimePlatform.IPhonePlayer)
             {
                 if(!SettingsGA.Platforms.Contains(platform))

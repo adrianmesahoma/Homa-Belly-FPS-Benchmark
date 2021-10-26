@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using GameAnalyticsSDK.Utilities;
 
 namespace GameAnalyticsSDK.Wrapper
@@ -14,6 +15,10 @@ namespace GameAnalyticsSDK.Wrapper
         private static readonly AndroidJavaClass GA = new AndroidJavaClass("com.gameanalytics.sdk.GameAnalytics");
         private static readonly AndroidJavaClass UNITY_GA = new AndroidJavaClass("com.gameanalytics.sdk.unity.UnityGameAnalytics");
         private static readonly AndroidJavaClass GA_IMEI = new AndroidJavaClass("com.gameanalytics.sdk.imei.GAImei");
+        private static readonly  AndroidJavaClass jc = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
+        private static readonly AndroidJavaClass ga = new AndroidJavaClass("com.gameanalytics.sdk.GAPlatform");
+        private static readonly AndroidJavaObject activity = jc.GetStatic<AndroidJavaObject>("currentActivity");
+
 #if gameanalytics_mopub_enabled
         private static readonly AndroidJavaClass MoPubClass = new AndroidJavaClass("com.mopub.unity.MoPubUnityPlugin");
 #endif
@@ -114,13 +119,11 @@ namespace GameAnalyticsSDK.Wrapper
                 {
                 }
             }
+
+
             UNITY_GA.CallStatic("initialize");
 
-            AndroidJavaClass jc = new AndroidJavaClass("com.unity3d.player.UnityPlayer");
-            AndroidJavaObject activity = jc.GetStatic<AndroidJavaObject>("currentActivity");
-
             GA.CallStatic("setEnabledErrorReporting", GameAnalytics.SettingsGA.NativeErrorReporting);
-            AndroidJavaClass ga = new AndroidJavaClass("com.gameanalytics.sdk.GAPlatform");
             ga.CallStatic("initialize", activity);
             GA.CallStatic("initialize", gamekey, gamesecret);
         }
