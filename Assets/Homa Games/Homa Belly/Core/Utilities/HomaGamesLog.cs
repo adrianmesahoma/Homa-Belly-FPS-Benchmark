@@ -82,7 +82,7 @@ namespace HomaGames.HomaBelly
             try
             {
                 StackTraceLogType previous = Application.GetStackTraceLogType(type);
-                Application.SetStackTraceLogType(type, stackTraceLogType);
+                //Application.SetStackTraceLogType(type, stackTraceLogType);
                 return previous;
             }
             catch (UnityException)
@@ -97,7 +97,7 @@ namespace HomaGames.HomaBelly
         {
             try
             {
-                Application.SetStackTraceLogType(type, stackTraceLogType);
+                //Application.SetStackTraceLogType(type, stackTraceLogType);
             }
             catch (UnityException)
             {

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using HomaGames.HomaBelly.Utilities;
+using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace HomaGames.HomaBelly
 {
@@ -36,7 +38,6 @@ namespace HomaGames.HomaBelly
         {
             RemoteConfiguration.FetchRemoteConfiguration().ContinueWith((remoteConfiguration) =>
             {
-                HomaGamesLog.Debug("[Homa Belly] Initializing Homa Belly after Remote Configuration fetch");
                 InitializeRemoteConfigurationDependantComponents(remoteConfiguration.Result);
             }, TaskScheduler.FromCurrentSynchronizationContext());
 
@@ -50,22 +51,46 @@ namespace HomaGames.HomaBelly
         private void InitializeRemoteConfigurationIndependentComponents()
         {
             // Instantiate
+            Debug.Log("InstantiateMediators");
+            Profiler.BeginSample("[SP] INSTANTIATE MEDIATORS");HomaGamesLog.Debug("[Homa Belly] Initializing Homa Belly after Remote Configuration fetch");
             InstantiateMediators();
+            Profiler.EndSample();
+            Debug.Log("InstantiateAttributions");
+            Profiler.BeginSample("[SP] INSTANTIATE ATTRIBUTION");
             InstantiateAttributions();
+            Profiler.EndSample();
+            Debug.Log("InstantiateAnalytics");
+            Profiler.BeginSample("[SP] INSTANTIATE ANALYTICS");
             InstantiateAnalytics();
+            Profiler.EndSample();
 
             // Auto-track AdEvents
+            Debug.Log("RegisterAdEventsForAnalytics");
+            Profiler.BeginSample("[SP] REGISTER AD EVENTS ANALYTICS");
             RegisterAdEventsForAnalytics();
+            Profiler.EndSample();
 
+            Debug.Log("AutoConfigureAnalyticsCustomDimensionsForNTesting");
+            Profiler.BeginSample("[SP] AUTO CONFIG DIMENSIONS");
             // Try to auto configure analytics custom dimensions from NTesting
             // This is done before initializing to ensure all analytic events
             // properly gather the custom dimension
             AutoConfigureAnalyticsCustomDimensionsForNTesting();
+            Profiler.EndSample();
 
             // Initialize
+            Debug.Log("InitializeMediators");
+            Profiler.BeginSample("[SP] INIT MEDIATORS");
             InitializeMediators();
+            Profiler.EndSample();
+            Debug.Log("InitializeAttributions");
+            Profiler.BeginSample("[SP] INIT ATTRIBUTION");
             InitializeAttributions();
+            Profiler.EndSample();
+            Debug.Log("InitializeAnalytics");
+            Profiler.BeginSample("[SP] INIT ANALYTICS");
             InitializeAnalytics();
+            Profiler.EndSample();
 
             // Start initialization grace period timer
             initializationStatus.StartInitializationGracePeriod();
@@ -602,7 +627,7 @@ namespace HomaGames.HomaBelly
 
         private void InstantiateMediators()
         {
-            // LINQ all available classes implementing IMediator interface
+            /*// LINQ all available classes implementing IMediator interface
             List<Type> availableMediators = Reflection.GetHomaBellyAvailableClasses(typeof(IMediator));
 
             // If available mediators found, instantiate them
@@ -625,7 +650,10 @@ namespace HomaGames.HomaBelly
             else
             {
                 HomaGamesLog.Warning("No available mediators found");
-            }
+            }*/
+            
+            mediators = new List<IMediator>();
+            mediators.Add(new AppLovinMaxMediator());
         }
 
         private void InitializeMediators()
@@ -637,9 +665,9 @@ namespace HomaGames.HomaBelly
                     try
                     {
                         // For Homa Belly v1.2.0+
-                        if (typeof(IMediatorWithInitializationCallback).IsInstanceOfType(mediator))
+                        if (typeof(IMediator).IsInstanceOfType(mediator))
                         {
-                            ((IMediatorWithInitializationCallback)mediator).Initialize(initializationStatus.OnInnerComponentInitialized);
+                            ((IMediator)mediator).Initialize(initializationStatus.OnInnerComponentInitialized);
                         }
                         else
                         {
@@ -663,7 +691,7 @@ namespace HomaGames.HomaBelly
 
         private void InstantiateAttributions()
         {
-            // LINQ all available classes implementing IAttribution interface
+            /*// LINQ all available classes implementing IAttribution interface
             List<Type> availableAttributions = Reflection.GetHomaBellyAvailableClasses(typeof(IAttribution));
 
             // If available mediators found, instantiate them
@@ -686,7 +714,10 @@ namespace HomaGames.HomaBelly
             else
             {
                 HomaGamesLog.Warning("No available attributions found");
-            }
+            }*/
+            
+            attributions = new List<IAttribution>();
+            attributions.Add(new SingularAttribution());
         }
 
         private void InitializeAttributions()
@@ -734,7 +765,7 @@ namespace HomaGames.HomaBelly
 
         private void InstantiateAnalytics()
         {
-            // LINQ all available classes implementing IAnalytics interface
+            /*// LINQ all available classes implementing IAnalytics interface
             List<Type> availableAnalytics = Reflection.GetHomaBellyAvailableClasses(typeof(IAnalytics));
 
             // If available mediators found, instantiate them
@@ -757,7 +788,12 @@ namespace HomaGames.HomaBelly
             else
             {
                 HomaGamesLog.Warning("No available analytics found");
-            }
+            }*/
+            
+            analytics = new List<IAnalytics>();
+            analytics.Add(new FacebookImplementation());
+            analytics.Add(new GameAnalyticsImplementation());
+            analytics.Add(new FirebaseAnalyticsImpl());
         }
 
         private void InitializeAnalytics()

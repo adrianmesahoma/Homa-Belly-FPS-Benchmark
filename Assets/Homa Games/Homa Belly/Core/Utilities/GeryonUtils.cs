@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using UnityEngine;
 
 namespace HomaGames.HomaBelly.Utilities
 {
@@ -27,7 +28,8 @@ namespace HomaGames.HomaBelly.Utilities
             {
                 WaitForInitialization().ContinueWith((result) =>
                 {
-                    HomaGamesLog.Debug($"Looking for Geryon NTESTING_ID");
+                    geryonNtestingId = HomaGames.Geryon.Config.NTESTING_ID;
+                    /*HomaGamesLog.Debug($"Looking for Geryon NTESTING_ID");
                     Type geryonConfig = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
                                             from type in assembly.GetTypes()
                                             where type.Namespace == "HomaGames.Geryon" && type.Name == "Config"
@@ -47,7 +49,7 @@ namespace HomaGames.HomaBelly.Utilities
                                 HomaGamesLog.Debug($"Geryon NTESTING_ID found: {geryonNtestingId}");
                             }
                         }
-                    }
+                    }*/
                 }, TaskScheduler.FromCurrentSynchronizationContext());
             }
             catch (Exception e)
@@ -70,18 +72,12 @@ namespace HomaGames.HomaBelly.Utilities
             {
                 WaitForInitialization().ContinueWith((result) =>
                 {
-                    Type geryonDvrType = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
-                                          from type in assembly.GetTypes()
-                                          where type.Name == "DVR"
-                                          select type).FirstOrDefault();
-                    if (geryonDvrType != null)
+                    Type geryonDvrType = typeof(DVR);
+                    FieldInfo field = geryonDvrType.GetField(propertyName);
+                    if (field != null)
                     {
-                        FieldInfo field = geryonDvrType.GetField(propertyName);
-                        if (field != null)
-                        {
-                            value = field.GetValue(null).ToString();
-                            UnityEngine.Debug.Log($"{propertyName} value from Geryon: {value}");
-                        }
+                        value = field.GetValue(null).ToString();
+                        UnityEngine.Debug.Log($"{propertyName} value from Geryon: {value}");
                     }
                 }, TaskScheduler.FromCurrentSynchronizationContext());
             }
@@ -147,6 +143,24 @@ namespace HomaGames.HomaBelly.Utilities
             {
                 await WaitForInitialization().ContinueWith((result) =>
                 {
+                    switch (propertyName)
+                    {
+                        case "OverrideId":
+                            stringPropertyValue = Geryon.Config.OverrideId;
+                            break;
+                        case "VariantId":
+                            stringPropertyValue = Geryon.Config.VariantId;
+                            break;
+                        case "ScopeId":
+                            stringPropertyValue = Geryon.Config.ScopeId;
+                            break;
+                        default:
+                            Debug.LogError($"Unknown property: {propertyName} in Geryon.Config");
+                            break;
+                    }
+                },TaskScheduler.FromCurrentSynchronizationContext());
+                /*await WaitForInitialization().ContinueWith((result) =>
+                {
                     Type geryonConfigType = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
                                              from type in assembly.GetTypes()
                                              where type.Namespace == "HomaGames.Geryon" && type.Name == "Config"
@@ -163,7 +177,7 @@ namespace HomaGames.HomaBelly.Utilities
                             }
                         }
                     }
-                }, TaskScheduler.FromCurrentSynchronizationContext());
+                }, TaskScheduler.FromCurrentSynchronizationContext());*/
             }
             catch (Exception e)
             {
@@ -182,7 +196,32 @@ namespace HomaGames.HomaBelly.Utilities
         {
             try
             {
-                Type geryonConfig = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
+                Debug.Log("WaitForInitialization 1");
+                if (Geryon.Config.Initialized)
+                {
+                    return;
+                }
+                
+                Debug.Log("WaitForInitialization 2");
+                
+                await Task.Run(() =>
+                {
+                    int iterationCount = 0;
+                    while (!Geryon.Config.Initialized && iterationCount < N_MAX_WAIT_ITERATIONS)
+                    {
+                        // Not yet initialized. Debug log and wait a bit more
+                        HomaGamesLog.Debug($"NTesting not yet initialized. Iteration: {iterationCount}. Waiting...");
+                        Thread.Sleep(WAIT_ITERATION_MS);
+                        iterationCount++;
+                    }
+
+                    if (iterationCount >= N_MAX_WAIT_ITERATIONS && !Geryon.Config.Initialized )
+                    {
+                        HomaGamesLog.Error("Max iterations reached waiting");
+                    }
+                });
+                
+                /*Type geryonConfig = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
                                      from type in assembly.GetTypes()
                                      where type.Namespace == "HomaGames.Geryon" && type.Name == "Config"
                                      select type).FirstOrDefault();
@@ -218,7 +257,7 @@ namespace HomaGames.HomaBelly.Utilities
                             }
                         }
                     });
-                }
+                }*/
             }
             catch (Exception e)
             {

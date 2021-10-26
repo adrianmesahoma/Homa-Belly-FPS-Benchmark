@@ -82,10 +82,10 @@ namespace HomaGames.HomaBelly
 #endregion
 
             // Set Log Stack Traces
-            Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
+            /*Application.SetStackTraceLogType(LogType.Log, StackTraceLogType.None);
             Application.SetStackTraceLogType(LogType.Warning, StackTraceLogType.None);
-            Application.SetStackTraceLogType(LogType.Error, StackTraceLogType.ScriptOnly);
-            Application.SetStackTraceLogType(LogType.Exception, StackTraceLogType.ScriptOnly);
+            Application.SetStackTraceLogType(LogType.Error, StackTraceLogType.Full);
+            Application.SetStackTraceLogType(LogType.Exception, StackTraceLogType.Full);*/
 
             // Initialization
             SetDebug(debugEnabled);

@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f870c7cdff069044962cec81ee361f2, type: 3}
   m_Name: Settings
   m_EditorClassIdentifier: 
-  androidAppID: com.DefaultCompany.HommaBellyPerformance
+  androidAppID: com.nagastudio.attack.titan
   iOSAppID: com.DefaultCompany.HommaBellyPerformance
   debugEnabled: 1

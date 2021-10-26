@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace HomaGames.HomaBelly
 {
-    public class AppLovinMaxMediator : IMediatorWithInitializationCallback
+    public class AppLovinMaxMediator : IMediator
     {
         private Dictionary<string, object> configurationData;
         private Events events = new Events();
@@ -36,7 +36,7 @@ namespace HomaGames.HomaBelly
             BANNER
         }
 
-        public void Initialize(Action onInitialized = null)
+        public override void Initialize(Action onInitialized = null)
         {
             configurationData = LoadConfigurationData();
             if (configurationData != null)
@@ -84,7 +84,7 @@ namespace HomaGames.HomaBelly
             }
         }
 
-        public void Initialize()
+        public override void Initialize()
         {
             Initialize(() =>
             {
@@ -92,7 +92,7 @@ namespace HomaGames.HomaBelly
             });
         }
 
-        public void DestroyBanner(string placementId = null)
+        public override void DestroyBanner(string placementId = null)
         {
             if (MaxSdk.IsInitialized())
             {
@@ -104,7 +104,7 @@ namespace HomaGames.HomaBelly
             }
         }
 
-        public void HideBanner(string placementId = null)
+        public override void HideBanner(string placementId = null)
         {
             if (MaxSdk.IsInitialized())
             {
@@ -116,7 +116,7 @@ namespace HomaGames.HomaBelly
             }
         }
 
-        public bool IsInterstitialAvailable(string placementId = null)
+        public override bool IsInterstitialAvailable(string placementId = null)
         {
             if (MaxSdk.IsInitialized())
             {
@@ -130,7 +130,7 @@ namespace HomaGames.HomaBelly
             return false;
         }
 
-        public bool IsRewardedVideoAdAvailable(string placementId = null)
+        public override bool IsRewardedVideoAdAvailable(string placementId = null)
         {
             if (MaxSdk.IsInitialized())
             {
@@ -144,7 +144,7 @@ namespace HomaGames.HomaBelly
             return false;
         }
 
-        public void LoadBanner(BannerSize size, BannerPosition position, string placementId = null, UnityEngine.Color bannerBackgroundColor = default)
+        public override void LoadBanner(BannerSize size, BannerPosition position, string placementId = null, UnityEngine.Color bannerBackgroundColor = default)
         {
             if (MaxSdk.IsInitialized())
             {
@@ -183,12 +183,12 @@ namespace HomaGames.HomaBelly
             }
         }
 
-        public void OnApplicationPause(bool pause)
+        public override void OnApplicationPause(bool pause)
         {
             // NO-OP
         }
 
-        public void RegisterEvents()
+        public override void RegisterEvents()
         {
             // Attach callbacks based on the ad format(s) you are using
             MaxSdkCallbacks.Interstitial.OnAdRevenuePaidEvent += OnAdRevenuePaidEvent;
@@ -220,27 +220,27 @@ namespace HomaGames.HomaBelly
 
         }
 
-        public void SetUserIsAboveRequiredAge(bool consent)
+        public override void SetUserIsAboveRequiredAge(bool consent)
         {
             MaxSdk.SetIsAgeRestrictedUser(!consent);
         }
 
-        public void SetTermsAndConditionsAcceptance(bool consent)
+        public override void SetTermsAndConditionsAcceptance(bool consent)
         {
             // NO-OP
         }
 
-        public void SetAnalyticsTrackingConsentGranted(bool consent)
+        public override void SetAnalyticsTrackingConsentGranted(bool consent)
         {
             // NO-OP
         }
 
-        public void SetTailoredAdsConsentGranted(bool consent)
+        public override void SetTailoredAdsConsentGranted(bool consent)
         {
             MaxSdk.SetHasUserConsent(consent);
         }
 
-        public void ShowBanner(string placementId = null)
+        public override void ShowBanner(string placementId = null)
         {
             if (MaxSdk.IsInitialized())
             {
@@ -252,7 +252,7 @@ namespace HomaGames.HomaBelly
             }
         }
 
-        public void ShowInterstitial(string placementId = null)
+        public override void ShowInterstitial(string placementId = null)
         {
             if (MaxSdk.IsInitialized())
             {
@@ -281,7 +281,7 @@ namespace HomaGames.HomaBelly
             }
         }
 
-        public void ShowRewardedVideoAd(string placementId = null)
+        public override void ShowRewardedVideoAd(string placementId = null)
         {
             if (MaxSdk.IsInitialized())
             {
@@ -311,7 +311,7 @@ namespace HomaGames.HomaBelly
             }
         }
 
-        public void ValidateIntegration()
+        public override void ValidateIntegration()
         {
             // Show Mediation Debugger
             MaxSdk.ShowMediationDebugger();
