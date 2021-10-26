@@ -51,26 +51,21 @@ namespace HomaGames.HomaBelly
         private void InitializeRemoteConfigurationIndependentComponents()
         {
             // Instantiate
-            Debug.Log("InstantiateMediators");
             Profiler.BeginSample("[SP] INSTANTIATE MEDIATORS");HomaGamesLog.Debug("[Homa Belly] Initializing Homa Belly after Remote Configuration fetch");
             InstantiateMediators();
             Profiler.EndSample();
-            Debug.Log("InstantiateAttributions");
             Profiler.BeginSample("[SP] INSTANTIATE ATTRIBUTION");
             InstantiateAttributions();
             Profiler.EndSample();
-            Debug.Log("InstantiateAnalytics");
             Profiler.BeginSample("[SP] INSTANTIATE ANALYTICS");
             InstantiateAnalytics();
             Profiler.EndSample();
 
             // Auto-track AdEvents
-            Debug.Log("RegisterAdEventsForAnalytics");
             Profiler.BeginSample("[SP] REGISTER AD EVENTS ANALYTICS");
             RegisterAdEventsForAnalytics();
             Profiler.EndSample();
 
-            Debug.Log("AutoConfigureAnalyticsCustomDimensionsForNTesting");
             Profiler.BeginSample("[SP] AUTO CONFIG DIMENSIONS");
             // Try to auto configure analytics custom dimensions from NTesting
             // This is done before initializing to ensure all analytic events
@@ -79,15 +74,12 @@ namespace HomaGames.HomaBelly
             Profiler.EndSample();
 
             // Initialize
-            Debug.Log("InitializeMediators");
             Profiler.BeginSample("[SP] INIT MEDIATORS");
             InitializeMediators();
             Profiler.EndSample();
-            Debug.Log("InitializeAttributions");
             Profiler.BeginSample("[SP] INIT ATTRIBUTION");
             InitializeAttributions();
             Profiler.EndSample();
-            Debug.Log("InitializeAnalytics");
             Profiler.BeginSample("[SP] INIT ANALYTICS");
             InitializeAnalytics();
             Profiler.EndSample();

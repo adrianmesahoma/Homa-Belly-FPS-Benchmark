@@ -211,13 +211,11 @@ namespace HomaGames.HomaBelly.Utilities
         {
             try
             {
-                Debug.Log("WaitForInitialization 1");
                 if (Geryon.Config.Initialized)
                 {
                     return;
                 }
                 
-                Debug.Log("WaitForInitialization 2");
                 
                 await Task.Run(() =>
                 {
