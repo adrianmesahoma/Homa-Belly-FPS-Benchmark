@@ -1465,6 +1465,15 @@ public class SingularSDK : MonoBehaviour {
 
             _configValues[key] = value;
         }
+        
+        public void SetValue(string key, string value) {
+            if (string.IsNullOrWhiteSpace(key) || string.IsNullOrWhiteSpace(value))
+            {
+                return;
+            }
+
+            _configValues[key] = value;
+        }
 
         public string ToJsonString() {
             return JsonConvert.SerializeObject(_configValues);
