@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using System;
 using CielaSpike;
 using System.Threading;
+using Task = System.Threading.Tasks.Task;
 #if UNITY_5_3_OR_NEWER && UNITY_PURCHASING
 using UnityEngine.Purchasing;
 #endif
@@ -165,14 +166,19 @@ public class SingularSDK : MonoBehaviour {
     public void Update() { }
 
 #if UNITY_ANDROID
-    private static void initSDK(SingularConfig config) {
+    private static async void initSDK(SingularConfig config) {
         Debug.Log("UNITY_ANDROID - init Is called");
 
         InitAndroidJavaClasses();
 
         activity = jclass.GetStatic<AndroidJavaObject>("currentActivity");
 
-        jniSingularUnityBridge.CallStatic("init", config.ToJsonString());
+        string jsonString = null;
+        await Task.Run(delegate
+        {
+            jsonString = config.ToJsonString();
+        });
+        jniSingularUnityBridge.CallStatic("init", jsonString);
 
         singular.CallStatic("setWrapperNameAndVersion", UNITY_WRAPPER_NAME, UNITY_VERSION);
     }

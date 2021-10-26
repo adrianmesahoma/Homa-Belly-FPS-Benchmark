@@ -154,6 +154,21 @@ namespace HomaGames.HomaBelly.Utilities
                         case "ScopeId":
                             stringPropertyValue = Geryon.Config.ScopeId;
                             break;
+                        case "ExternalToken0":
+                            stringPropertyValue = Geryon.Config.ExternalToken0;
+                            break;
+                        case "ExternalToken1":
+                            stringPropertyValue = Geryon.Config.ExternalToken1;
+                            break;
+                        case "ExternalToken2":
+                            stringPropertyValue = Geryon.Config.ExternalToken2;
+                            break;
+                        case "ExternalToken3":
+                            stringPropertyValue = Geryon.Config.ExternalToken3;
+                            break;
+                        case "ExternalToken4":
+                            stringPropertyValue = Geryon.Config.ExternalToken4;
+                            break;
                         default:
                             Debug.LogError($"Unknown property: {propertyName} in Geryon.Config");
                             break;
