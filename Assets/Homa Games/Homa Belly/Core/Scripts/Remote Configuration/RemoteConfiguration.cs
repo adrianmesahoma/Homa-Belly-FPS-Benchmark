@@ -41,7 +41,7 @@ namespace HomaGames.HomaBelly
 
             try
             {
-                Dictionary<string, object> trackingData = ReadTrackingData();
+                Dictionary<string, object> trackingData = await ReadTrackingData();
                 if (trackingData != null && trackingData.ContainsKey("ti"))
                 {
                     string firstTimeUri = string.Format(RemoteConfigurationConstants.API_FIRST_TIME_URL, trackingData["ti"], GetUserAgent());
@@ -141,7 +141,7 @@ namespace HomaGames.HomaBelly
         /// Reads the tracking data from Streaming Assets config file
         /// </summary>
         /// <returns></returns>
-        private static Dictionary<string, object> ReadTrackingData()
+        private async static Task<Dictionary<string, object>> ReadTrackingData()
         {
 #if UNITY_EDITOR
             if (!File.Exists(RemoteConfigurationConstants.TRACKING_FILE))
@@ -150,8 +150,15 @@ namespace HomaGames.HomaBelly
             }
 #endif
 
-            string trackingData = FileUtilities.ReadAllText(RemoteConfigurationConstants.TRACKING_FILE);
-            return Json.Deserialize(trackingData) as Dictionary<string, object>;
+            string path = RemoteConfigurationConstants.TRACKING_FILE;
+            Dictionary<string, object> result= null;
+            Task.Run(delegate
+            {
+                string trackingData = File.ReadAllText(path);
+                result = Json.Deserialize(trackingData) as Dictionary<string, object>;
+            });
+           
+            return result;
         }
 
 
