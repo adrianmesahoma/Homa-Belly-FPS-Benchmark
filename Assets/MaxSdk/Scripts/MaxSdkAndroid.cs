@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
@@ -32,9 +33,14 @@ public class MaxSdkAndroid : MaxSdkBase
     ///
     /// This method must be called before any other SDK operation
     /// </summary>
-    public static void SetSdkKey(string sdkKey)
+    public static async void SetSdkKey(string sdkKey)
     {
-        MaxUnityPluginClass.CallStatic("setSdkKey", sdkKey);
+        Task.Run(delegate()
+        {
+            AndroidJNI.AttachCurrentThread();
+            MaxUnityPluginClass.CallStatic("setSdkKey", sdkKey);
+            AndroidJNI.DetachCurrentThread();
+        });
     }
 
     /// <summary>
@@ -45,10 +51,16 @@ public class MaxSdkAndroid : MaxSdkBase
     /// OPTIONAL: Set the MAX ad unit ids to be used for this instance of the SDK. 3rd-party SDKs will be initialized with the credentials configured for these ad unit ids.
     /// This should only be used if you have different sets of ad unit ids / credentials for the same package name.</param>
     /// </summary>
-    public static void InitializeSdk(string[] adUnitIds = null)
+    public static async void InitializeSdk(string[] adUnitIds = null)
     {
         var serializedAdUnitIds = (adUnitIds != null) ? string.Join(",", adUnitIds) : "";
-        MaxUnityPluginClass.CallStatic("initializeSdk", serializedAdUnitIds, GenerateMetaData());
+        var generateMetaData = GenerateMetaData();
+        Task.Run(delegate()
+        {
+            AndroidJNI.AttachCurrentThread();
+            MaxUnityPluginClass.CallStatic("initializeSdk", serializedAdUnitIds, generateMetaData);
+            AndroidJNI.DetachCurrentThread();
+        });
     }
 
     /// <summary>
@@ -796,9 +808,14 @@ public class MaxSdkAndroid : MaxSdkBase
     /// Toggle verbose logging of AppLovin SDK. If enabled AppLovin messages will appear in standard application log accessible via logcat. All log messages will have "AppLovinSdk" tag.
     /// </summary>
     /// <param name="enabled"><c>true</c> if verbose logging should be enabled.</param>
-    public static void SetVerboseLogging(bool enabled)
+    public static async void SetVerboseLogging(bool enabled)
     {
-        MaxUnityPluginClass.CallStatic("setVerboseLogging", enabled);
+        Task.Run(delegate
+        {
+            AndroidJNI.AttachCurrentThread();
+            MaxUnityPluginClass.CallStatic("setVerboseLogging", enabled);
+            AndroidJNI.DetachCurrentThread();
+        });
     }
 
     /// <summary>

@@ -36,9 +36,11 @@ namespace HomaGames.HomaBelly
             BANNER
         }
 
-        public override void Initialize(Action onInitialized = null)
+        public override async void Initialize(Action onInitialized = null)
         {
-            configurationData = LoadConfigurationData();
+            var loadTask = LoadConfigurationData();
+            await loadTask;
+            configurationData = loadTask.Result;
             if (configurationData != null)
             {
                 string sdkKey = configurationData.ContainsKey("s_sdk_key") ? (string)configurationData["s_sdk_key"] : "";
@@ -446,7 +448,7 @@ namespace HomaGames.HomaBelly
             }
         }
 
-        private Dictionary<string, object> LoadConfigurationData()
+        private async Task<Dictionary<string, object>> LoadConfigurationData()
         {
 #if UNITY_EDITOR
             if (!File.Exists(HomaBellyAppLovinMaxConstants.CONFIG_FILE))
@@ -455,8 +457,15 @@ namespace HomaGames.HomaBelly
             }
 #endif
 
-            string configJson = FileUtilities.ReadAllText(HomaBellyAppLovinMaxConstants.CONFIG_FILE);
-            return Json.Deserialize(configJson) as Dictionary<string, object>;
+            string path = HomaBellyAppLovinMaxConstants.CONFIG_FILE;
+            Dictionary<string, object> result = null;
+            string configJson = FileUtilities.ReadAllText(path);
+            await Task.Run(delegate
+            {
+                result = Json.Deserialize(configJson) as Dictionary<string, object>;
+            });
+            
+            return result;
         }
 
         private string GetAdIdOrDefault(AdType adType, string placement)
