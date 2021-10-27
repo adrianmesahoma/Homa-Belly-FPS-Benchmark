@@ -143,21 +143,9 @@ namespace HomaGames.HomaBelly
         /// <returns></returns>
         private async static Task<Dictionary<string, object>> ReadTrackingData()
         {
-#if UNITY_EDITOR
-            if (!File.Exists(RemoteConfigurationConstants.TRACKING_FILE))
-            {
-                return null;
-            }
-#endif
-
-            string path = RemoteConfigurationConstants.TRACKING_FILE;
-            Dictionary<string, object> result= null;
-            Task.Run(delegate
-            {
-                string trackingData = File.ReadAllText(path);
-                result = Json.Deserialize(trackingData) as Dictionary<string, object>;
-            });
-           
+            Dictionary<string, object> result =
+                await FileUtilities.LoadAndDeserializeJsonFromResources<Dictionary<string, object>>(RemoteConfigurationConstants.TRACKING_FILE_RESOURCES);
+            
             return result;
         }
 

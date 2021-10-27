@@ -450,20 +450,8 @@ namespace HomaGames.HomaBelly
 
         private async Task<Dictionary<string, object>> LoadConfigurationData()
         {
-#if UNITY_EDITOR
-            if (!File.Exists(HomaBellyAppLovinMaxConstants.CONFIG_FILE))
-            {
-                return null;
-            }
-#endif
-
-            string path = HomaBellyAppLovinMaxConstants.CONFIG_FILE;
-            Dictionary<string, object> result = null;
-            string configJson = FileUtilities.ReadAllText(path);
-            await Task.Run(delegate
-            {
-                result = Json.Deserialize(configJson) as Dictionary<string, object>;
-            });
+            Dictionary<string, object> result =
+                await FileUtilities.LoadAndDeserializeJsonFromResources<Dictionary<string, object>>(HomaBellyAppLovinMaxConstants.CONFIG_FILE_RESOURCES);
             
             return result;
         }

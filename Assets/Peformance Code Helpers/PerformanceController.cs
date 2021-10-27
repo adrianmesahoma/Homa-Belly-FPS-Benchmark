@@ -1,16 +1,21 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Net.Http;
+using System.Threading.Tasks;
 using HomaGames.HomaBelly;
 using UnityEngine;
-using CielaSpike;
 using Facebook.Unity;
 using GameAnalyticsSDK.Events;
 using Newtonsoft.Json;
+using UnityEngine.Networking;
 
 public class PerformanceController : MonoBehaviour
 {
     private static bool status = false;
+    static readonly HttpClient client = new HttpClient();
+
     private void Awake()
     {
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
@@ -50,12 +55,12 @@ public class PerformanceController : MonoBehaviour
 
     public void TestThread()
     {
-        this.StartCoroutineAsync(Thread());
+        Thread();
     }
 
-    private IEnumerator Thread()
+    private async void Thread()
     {
-        Debug.Log("Starting test Thread");
+        /*Debug.Log("Starting test Thread");
         
         Debug.Log("Test Application.IsEditor");
         Debug.Log("Application.isEditor: "+Application.isEditor);
@@ -82,9 +87,161 @@ public class PerformanceController : MonoBehaviour
         //FB.LogAppEvent("DummyEvent", 99f, tempDictionary);
         
         yield return Ninja.JumpToUnity;
-        AndroidJavaObject androidJavaObject = new AndroidJavaObject("org.json.JSONObject", json);
+        AndroidJavaObject androidJavaObject = new AndroidJavaObject("org.json.JSONObject", json);*/
 
-        yield break;
+        Debug.Log("LOADING "+RemoteConfigurationConstants
+            .TRACKING_FILE_RESOURCES);
+        Debug.Log($"Resources Load "+Resources.Load(RemoteConfigurationConstants
+            .TRACKING_FILE_RESOURCES));
+        Debug.Log($"Resources Load With Type "+Resources.Load<TextAsset>(RemoteConfigurationConstants
+            .TRACKING_FILE_RESOURCES));
+        Dictionary<string,object> result = await FileUtilities.LoadAndDeserializeJsonFromResources<Dictionary<string, object>>(RemoteConfigurationConstants
+            .TRACKING_FILE_RESOURCES);
+        Debug.Log("LOAED "+result.Count);
+    }
+
+    private async void ReadAsync()
+    {
+        Debug.Log("ReadAsync");
+        string result = null;
+        try	
+        {
+            var path = HomaBellyAppLovinMaxConstants.CONFIG_FILE;
+            
+            if (path.Contains("://") || path.Contains(":///"))
+            {
+                // Wait until async operation has finished
+                UnityWebRequest www = UnityWebRequest.Get(path);
+                www.SendWebRequest();
+                await Task.Run(delegate
+                {
+                    while(!www.isDone)
+                    {
+                        continue;
+                    }
+                });
+                result =  www.downloadHandler.text;
+            }
+            else
+            {
+                result = File.ReadAllText(path);
+            }
+        }
+        catch(HttpRequestException e)
+        {
+            Debug.LogError("\nException Caught!");	
+            Debug.LogErrorFormat("Message :{0} ",e.Message);
+        }
+
+        Debug.Log("RESULT: "+result);
+    }
+    
+    private async void ReadAsync1()
+    {
+        Debug.Log("ReadAsync1");
+        string result = null;
+        try	
+        {
+            var path = HomaBellyAppLovinMaxConstants.CONFIG_FILE;
+            
+            if (path.Contains("://") || path.Contains(":///"))
+            {
+                // Wait until async operation has finished
+                UnityWebRequest www = UnityWebRequest.Get(path);
+                www.SendWebRequest();
+                await Task.Run(delegate
+                {
+                    while(!www.isDone)
+                    {
+                        continue;
+                    }
+                    result =  www.downloadHandler.text;
+                });
+            }
+            else
+            {
+                result = File.ReadAllText(path);
+            }
+        }
+        catch(HttpRequestException e)
+        {
+            Debug.LogError("\nException Caught!");	
+            Debug.LogErrorFormat("Message :{0} ",e.Message);
+        }
+
+        Debug.Log("RESULT: "+result);
+    }
+    
+    private async void ReadAsync2()
+    {
+        Debug.Log("ReadAsync2");
+        string result = null;
+        try	
+        {
+            var path = HomaBellyAppLovinMaxConstants.CONFIG_FILE;
+            
+            if (path.Contains("://") || path.Contains(":///"))
+            {
+                // Wait until async operation has finished
+                UnityWebRequest www = UnityWebRequest.Get(path);
+                await Task.Run(delegate
+                {
+                    www.SendWebRequest();
+                    while(!www.isDone)
+                    {
+                        continue;
+                    }
+                    result =  www.downloadHandler.text;
+                });
+            }
+            else
+            {
+                result = File.ReadAllText(path);
+            }
+        }
+        catch(HttpRequestException e)
+        {
+            Debug.LogError("\nException Caught!");	
+            Debug.LogErrorFormat("Message :{0} ",e.Message);
+        }
+
+        Debug.Log("RESULT: "+result);
+    }
+    
+    private async void ReadAsync3()
+    {
+        Debug.Log("ReadAsync3");
+        string result = null;
+        try	
+        {
+            var path = HomaBellyAppLovinMaxConstants.CONFIG_FILE;
+            
+            if (path.Contains("://") || path.Contains(":///"))
+            {
+                // Wait until async operation has finished
+                await Task.Run(delegate
+                {
+                    UnityWebRequest www = UnityWebRequest.Get(path);
+                    www.SendWebRequest();
+                    while(!www.isDone)
+                    {
+                        continue;
+                    }
+                    result =  www.downloadHandler.text;
+                });
+            }
+            else
+            {
+                result = File.ReadAllText(path);
+            }
+        }
+        catch(HttpRequestException e)
+        {
+            Debug.LogError("\nException Caught!");	
+            Debug.LogErrorFormat("Message :{0} ",e.Message);
+        }
+
+        Debug.Log("RESULT: "+result);
     }
 
     public void GPDRTest()
