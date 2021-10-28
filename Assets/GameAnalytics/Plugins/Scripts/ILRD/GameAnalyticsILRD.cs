@@ -16,9 +16,6 @@ namespace GameAnalyticsSDK
 #if gameanalytics_topon_enabled
         private static readonly AndroidJavaClass TopOnClass = new AndroidJavaClass("com.anythink.core.api.ATSDK");
 #endif
-#if gameanalytics_aequus_enabled
-        private static readonly AndroidJavaClass AequusClass = new AndroidJavaClass("mobi.aequus.sdk.BuildConfig");
-#endif
 #if gameanalytics_hyperbid_enabled
         private static readonly AndroidJavaClass HyperBidClass = new AndroidJavaClass("com.hyperbid.core.api.HBSDK");
 #endif
@@ -97,12 +94,12 @@ namespace GameAnalyticsSDK
             GAAequusIntegration.ListenForImpressions(AequusImpressionHandler);
         }
 
-        private static void AequusImpressionHandler(string json)
+        private static void AequusImpressionHandler(string sdkVersion, string json)
         {
             if(!string.IsNullOrEmpty(json))
             {
 #if gameanalytics_aequus_enabled
-                GA.CallStatic("addImpressionAequusEvent", AequusClass.GetStatic<string>("SDK_VERSION_NAME"), json);
+                GA.CallStatic("addImpressionAequusEvent", sdkVersion, json);
 #endif
             }
         }
@@ -126,7 +123,7 @@ namespace GameAnalyticsSDK
         // --------- IOS NATIVE METHODS ---------
 #if (UNITY_IOS) && (!UNITY_EDITOR)
         [DllImport ("__Internal")]
-        private static extern void addImpressionEvent(string adNetworkName, string adNetworkVersion, string impressionData);
+        private static extern void addImpressionEvent(string adNetworkName, string adNetworkVersion, string impressionData, string customFields);
 #if gameanalytics_mopub_enabled
         [DllImport("__Internal")]
         private static extern string _moPubGetSDKVersion();
@@ -152,7 +149,7 @@ namespace GameAnalyticsSDK
             if(!string.IsNullOrEmpty(json))
             {
 #if gameanalytics_mopub_enabled
-                addImpressionEvent("mopub", _moPubGetSDKVersion(), json);
+                addImpressionEvent("mopub", _moPubGetSDKVersion(), json, null);
 #endif
             }
         }
@@ -167,7 +164,7 @@ namespace GameAnalyticsSDK
             if(!string.IsNullOrEmpty(json))
             {
 #if gameanalytics_fyber_enabled
-                addImpressionEvent("fyber", Fyber.FairBid.Version, json);
+                addImpressionEvent("fyber", Fyber.FairBid.Version, json, null);
 #endif
             }
         }
@@ -191,7 +188,7 @@ namespace GameAnalyticsSDK
                     v = v.Substring(0, index);
                 }
 
-                addImpressionEvent("ironsource", v, json);
+                addImpressionEvent("ironsource", v, json, null);
 #endif
             }
         }
@@ -206,7 +203,7 @@ namespace GameAnalyticsSDK
             if(!string.IsNullOrEmpty(json))
             {
 #if gameanalytics_topon_enabled
-                addImpressionEvent("topon", getTopOnSdkVersion(), json);
+                addImpressionEvent("topon", getTopOnSdkVersion(), json, null);
 #endif
             }
         }
@@ -221,7 +218,7 @@ namespace GameAnalyticsSDK
             if(!string.IsNullOrEmpty(json))
             {
 #if gameanalytics_max_enabled
-                addImpressionEvent("max", MaxSdk.Version, json);
+                addImpressionEvent("max", MaxSdk.Version, json, null);
 #endif
             }
         }
@@ -231,12 +228,12 @@ namespace GameAnalyticsSDK
             GAAequusIntegration.ListenForImpressions(AequusImpressionHandler);
         }
 
-        private static void AequusImpressionHandler(string json)
+        private static void AequusImpressionHandler(string sdkVersion, string json)
         {
             if(!string.IsNullOrEmpty(json))
             {
 #if gameanalytics_aequus_enabled
-                // TODO: iOS not supported yet for Aequus
+                addImpressionEvent("aequus", sdkVersion, json, null);
 #endif
             }
         }
@@ -251,7 +248,7 @@ namespace GameAnalyticsSDK
             if(!string.IsNullOrEmpty(json))
             {
 #if gameanalytics_hyperbid_enabled
-                addImpressionEvent("hyperbid", getHyperBidSdkVersion(), json);
+                addImpressionEvent("hyperbid", getHyperBidSdkVersion(), json, null);
 #endif
             }
         }
@@ -328,4 +325,3 @@ namespace GameAnalyticsSDK
         }
     }
 }
-

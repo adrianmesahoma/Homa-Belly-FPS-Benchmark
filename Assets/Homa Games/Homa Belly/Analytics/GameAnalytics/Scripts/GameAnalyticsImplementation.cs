@@ -138,7 +138,9 @@ namespace HomaGames.HomaBelly
 
         public void TrackResourceEvent(ResourceFlowType flowType, string currency, float amount, string itemType, string itemId)
         {
+            #if UNITY_EDITOR || HOMA_DEVELOPMENT
             if (GAValidator.ValidateResourceEvent((GAResourceFlowType)flowType, currency, amount, itemType, itemId))
+            #endif
             {
                 GameAnalytics.NewResourceEvent((GAResourceFlowType)flowType, currency, amount, itemType, itemId);
             }
@@ -146,7 +148,9 @@ namespace HomaGames.HomaBelly
 
         public void TrackProgressionEvent(ProgressionStatus progressionStatus, string progression01, int score = 0)
         {
+            #if UNITY_EDITOR || HOMA_DEVELOPMENT
             if (GAValidator.ValidateProgressionEvent((GAProgressionStatus)progressionStatus, progression01, "", ""))
+            #endif
             {
                 GameAnalytics.NewProgressionEvent((GAProgressionStatus)progressionStatus, progression01, score);
             }
@@ -154,7 +158,9 @@ namespace HomaGames.HomaBelly
 
         public void TrackProgressionEvent(ProgressionStatus progressionStatus, string progression01, string progression02, int score = 0)
         {
+            #if UNITY_EDITOR || HOMA_DEVELOPMENT
             if (GAValidator.ValidateProgressionEvent((GAProgressionStatus)progressionStatus, progression01, progression02, ""))
+            #endif
             {
                 GameAnalytics.NewProgressionEvent((GAProgressionStatus)progressionStatus, progression01, progression02, score);
             }
@@ -162,7 +168,9 @@ namespace HomaGames.HomaBelly
 
         public void TrackProgressionEvent(ProgressionStatus progressionStatus, string progression01, string progression02, string progression03, int score = 0)
         {
+            #if UNITY_EDITOR || HOMA_DEVELOPMENT
             if (GAValidator.ValidateProgressionEvent((GAProgressionStatus)progressionStatus, progression01, progression02, progression03))
+            #endif
             {
                 GameAnalytics.NewProgressionEvent((GAProgressionStatus)progressionStatus, progression01, progression02, progression03, score);
             }
@@ -178,9 +186,9 @@ namespace HomaGames.HomaBelly
 
         public void TrackDesignEvent(string eventName, float eventValue = 0f)
         {
-            // Optimization: Validate design event is done inside GameAnalytics
-            // we can save some milliseconds 
-            //if (GAValidator.ValidateDesignEvent(eventName))
+            #if UNITY_EDITOR || HOMA_DEVELOPMENT
+            if (GAValidator.ValidateDesignEvent(eventName))
+            #endif
             {
                 GameAnalytics.NewDesignEvent(eventName, eventValue);
             }
@@ -188,7 +196,9 @@ namespace HomaGames.HomaBelly
 
         public void TrackAdEvent(AdAction adAction, AdType adType, string adNetwork, string adPlacementId)
         {
+            #if UNITY_EDITOR || HOMA_DEVELOPMENT
             if (GAValidator.ValidateAdEvent((GAAdAction)adAction, (GAAdType)adType, adNetwork, string.IsNullOrEmpty(adPlacementId) ? "default" : adPlacementId))
+            #endif
             {
                 GameAnalytics.NewAdEvent((GAAdAction)adAction, (GAAdType)adType, adNetwork, string.IsNullOrEmpty(adPlacementId) ? "default" : adPlacementId);
             }

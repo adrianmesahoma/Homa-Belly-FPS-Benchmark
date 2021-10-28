@@ -2,7 +2,6 @@ using UnityEngine;
 using System.Collections;
 using GameAnalyticsSDK.Validators;
 using System.Collections.Generic;
-using CielaSpike;
 using GameAnalyticsSDK.Utilities;
 
 namespace GameAnalyticsSDK.Wrapper
@@ -190,7 +189,7 @@ namespace GameAnalyticsSDK.Wrapper
             }
         }
 
-        private static void addAdEventWithDuration(int adAction, int adType, string adSdkName, string adPlacement, long duration)
+        private static void addAdEventWithDuration(int adAction, int adType, string adSdkName, string adPlacement, long duration, string fields)
         {
             if (GameAnalytics.SettingsGA.InfoLogEditor)
             {
@@ -198,7 +197,7 @@ namespace GameAnalyticsSDK.Wrapper
             }
         }
 
-        private static void addAdEventWithReason(int adAction, int adType, string adSdkName, string adPlacement, int noAdReason)
+        private static void addAdEventWithReason(int adAction, int adType, string adSdkName, string adPlacement, int noAdReason, string fields)
         {
             if (GameAnalytics.SettingsGA.InfoLogEditor)
             {
@@ -206,7 +205,7 @@ namespace GameAnalyticsSDK.Wrapper
             }
         }
 
-        private static void addAdEvent(int adAction, int adType, string adSdkName, string adPlacement)
+        private static void addAdEvent(int adAction, int adType, string adSdkName, string adPlacement, string fields)
         {
             if (GameAnalytics.SettingsGA.InfoLogEditor)
             {
@@ -520,14 +519,7 @@ namespace GameAnalyticsSDK.Wrapper
 
         public static void AddDesignEvent (string eventID, float eventValue, IDictionary<string, object> fields)
         {
-            GameAnalytics.Instance.StartCoroutineAsync(AddDesignEventWithValueAsync(eventID,eventValue,fields));
-        }
-
-        private static IEnumerator AddDesignEventWithValueAsync(string eventID,float eventValue, IDictionary<string, object> fields)
-        {
             string fieldsAsString = DictionaryToJsonString(fields);
-            
-            yield return Ninja.JumpToUnity;
 #if UNITY_EDITOR
             if (GAValidator.ValidateDesignEvent (eventID)) {
                 addDesignEventWithValue (eventID, eventValue, fieldsAsString);
@@ -535,28 +527,18 @@ namespace GameAnalyticsSDK.Wrapper
 #else
                 addDesignEventWithValue (eventID, eventValue, fieldsAsString);
 #endif
-            yield break;
         }
 
         public static void AddDesignEvent (string eventID, IDictionary<string, object> fields)
         {
-            GameAnalytics.Instance.StartCoroutineAsync(AddDesignEventAsync(eventID,fields));
-        }
-
-        private static IEnumerator AddDesignEventAsync(string eventID, IDictionary<string, object> fields)
-        {
             string fieldsAsString = DictionaryToJsonString(fields);
-
-            yield return Ninja.JumpToUnity;
 #if UNITY_EDITOR
             if (GAValidator.ValidateDesignEvent (eventID)) {
                 addDesignEvent (eventID, fieldsAsString);
             }
 #else
-            addDesignEvent (eventID, fieldsAsString);
+                addDesignEvent (eventID, fieldsAsString);
 #endif
-            
-            yield break;
         }
 
         public static void AddErrorEvent (GAErrorSeverity severity, string message, IDictionary<string, object> fields)
@@ -571,39 +553,42 @@ namespace GameAnalyticsSDK.Wrapper
 #endif
         }
 
-        public static void AddAdEventWithDuration(GAAdAction adAction, GAAdType adType, string adSdkName, string adPlacement, long duration)
+        public static void AddAdEventWithDuration(GAAdAction adAction, GAAdType adType, string adSdkName, string adPlacement, long duration, IDictionary<string, object> fields)
         {
+            string fieldsAsString = DictionaryToJsonString(fields);
 #if UNITY_EDITOR
             if (GAValidator.ValidateAdEvent(adAction, adType, adSdkName, adPlacement))
             {
-                addAdEventWithDuration((int)adAction, (int)adType, adSdkName, adPlacement, duration);
+                addAdEventWithDuration((int)adAction, (int)adType, adSdkName, adPlacement, duration, fieldsAsString);
             }
 #elif UNITY_IOS || UNITY_ANDROID
-                addAdEventWithDuration((int)adAction, (int)adType, adSdkName, adPlacement, duration);
+                addAdEventWithDuration((int)adAction, (int)adType, adSdkName, adPlacement, duration, fieldsAsString);
 #endif
         }
 
-        public static void AddAdEventWithReason(GAAdAction adAction, GAAdType adType, string adSdkName, string adPlacement, GAAdError noAdReason)
+        public static void AddAdEventWithReason(GAAdAction adAction, GAAdType adType, string adSdkName, string adPlacement, GAAdError noAdReason, IDictionary<string, object> fields)
         {
+            string fieldsAsString = DictionaryToJsonString(fields);
 #if UNITY_EDITOR
             if (GAValidator.ValidateAdEvent(adAction, adType, adSdkName, adPlacement))
             {
-                addAdEventWithReason((int)adAction, (int)adType, adSdkName, adPlacement, (int)noAdReason);
+                addAdEventWithReason((int)adAction, (int)adType, adSdkName, adPlacement, (int)noAdReason, fieldsAsString);
             }
 #elif UNITY_IOS || UNITY_ANDROID
-                addAdEventWithReason((int)adAction, (int)adType, adSdkName, adPlacement, (int)noAdReason);
+                addAdEventWithReason((int)adAction, (int)adType, adSdkName, adPlacement, (int)noAdReason, fieldsAsString);
 #endif
         }
 
-        public static void AddAdEvent(GAAdAction adAction, GAAdType adType, string adSdkName, string adPlacement)
+        public static void AddAdEvent(GAAdAction adAction, GAAdType adType, string adSdkName, string adPlacement, IDictionary<string, object> fields)
         {
+            string fieldsAsString = DictionaryToJsonString(fields);
 #if UNITY_EDITOR
             if (GAValidator.ValidateAdEvent(adAction, adType, adSdkName, adPlacement))
             {
-                addAdEvent((int)adAction, (int)adType, adSdkName, adPlacement);
+                addAdEvent((int)adAction, (int)adType, adSdkName, adPlacement, fieldsAsString);
             }
 #elif UNITY_IOS || UNITY_ANDROID
-                addAdEvent((int)adAction, (int)adType, adSdkName, adPlacement);
+                addAdEvent((int)adAction, (int)adType, adSdkName, adPlacement, fieldsAsString);
 #endif
         }
 
