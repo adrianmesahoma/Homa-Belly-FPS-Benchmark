@@ -13,7 +13,6 @@ using UnityEngine.Networking;
 
 public class PerformanceController : MonoBehaviour
 {
-    private static bool status = false;
     static readonly HttpClient client = new HttpClient();
 
     private void Awake()

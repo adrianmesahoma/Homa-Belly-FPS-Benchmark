@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using System;
-using CielaSpike;
 using System.Threading;
+using Facebook.Unity;
 using Task = System.Threading.Tasks.Task;
 #if UNITY_5_3_OR_NEWER && UNITY_PURCHASING
 using UnityEngine.Purchasing;
@@ -647,24 +647,22 @@ public class SingularSDK : MonoBehaviour {
             
 #elif UNITY_ANDROID
             // Optimization: Moved Android track event to a coroutine
-            instance.StartCoroutineAsync(instance.AndroidTrackEventCoroutine(args,name));
+            await Task.Run(delegate
+            {
+                AndroidJNI.AttachCurrentThread();
+                var serializeObject = JsonConvert.SerializeObject(args, Formatting.None);
+
+                // Note: AndroidJavaObject crashes the application if done in another thread
+                AndroidJavaObject json = new AndroidJavaObject("org.json.JSONObject", serializeObject);
+                if (singular != null) {
+                    status = singular.CallStatic<bool>("eventJSON", name, json);
+                }
+                AndroidJNI.DetachCurrentThread();
+            });
 #endif
 
         }
     }
-
-#if UNITY_ANDROID
-    private IEnumerator AndroidTrackEventCoroutine(Dictionary<string, object> args,string name)
-    {
-        var serializeObject = JsonConvert.SerializeObject(args, Formatting.None);
-        yield return Ninja.JumpToUnity;
-        // Note: AndroidJavaObject crashes the application if done in another thread
-        AndroidJavaObject json = new AndroidJavaObject("org.json.JSONObject", serializeObject);
-        if (singular != null) {
-            status = singular.CallStatic<bool>("eventJSON", name, json);
-        }
-    }
-#endif
 
     /* 
 	allowed argumenst are: string, int, long, float, double, null, ArrayList, Dictionary<String,object>

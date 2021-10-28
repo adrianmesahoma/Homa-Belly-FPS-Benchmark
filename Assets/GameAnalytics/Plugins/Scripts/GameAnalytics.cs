@@ -171,7 +171,7 @@ namespace GameAnalyticsSDK
             }
         }
 
-        private static async void InternalInitialize(RuntimePlatform platform, string unityVersion, string applicationVersion)
+        private static void InternalInitialize(RuntimePlatform platform, string unityVersion, string applicationVersion)
         {
             /*if(!Application.isPlaying)
                 return; // no need to setup anything else if we are in the editor and not playing*/
