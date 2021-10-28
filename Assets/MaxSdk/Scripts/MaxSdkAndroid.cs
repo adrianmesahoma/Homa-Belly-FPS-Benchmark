@@ -35,7 +35,7 @@ public class MaxSdkAndroid : MaxSdkBase
     /// </summary>
     public static async void SetSdkKey(string sdkKey)
     {
-        Task.Run(delegate()
+        await Task.Run(delegate()
         {
             AndroidJNI.AttachCurrentThread();
             MaxUnityPluginClass.CallStatic("setSdkKey", sdkKey);
@@ -810,7 +810,7 @@ public class MaxSdkAndroid : MaxSdkBase
     /// <param name="enabled"><c>true</c> if verbose logging should be enabled.</param>
     public static async void SetVerboseLogging(bool enabled)
     {
-        Task.Run(delegate
+        _ = Task.Run(delegate
         {
             AndroidJNI.AttachCurrentThread();
             MaxUnityPluginClass.CallStatic("setVerboseLogging", enabled);
