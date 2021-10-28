@@ -55,7 +55,7 @@ public class MaxSdkAndroid : MaxSdkBase
     {
         var serializedAdUnitIds = (adUnitIds != null) ? string.Join(",", adUnitIds) : "";
         var generateMetaData = GenerateMetaData();
-        Task.Run(delegate()
+        await Task.Run(delegate
         {
             AndroidJNI.AttachCurrentThread();
             MaxUnityPluginClass.CallStatic("initializeSdk", serializedAdUnitIds, generateMetaData);
