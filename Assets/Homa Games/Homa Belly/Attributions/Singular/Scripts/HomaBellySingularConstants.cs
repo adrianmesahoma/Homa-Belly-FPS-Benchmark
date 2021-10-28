@@ -7,6 +7,7 @@ namespace HomaGames.HomaBelly
         public const string ID = "singular";
         public const PackageType TYPE = PackageType.ATTRIBUTION_PLATFORM;
         public static string CONFIG_FILE = Application.streamingAssetsPath + "/Homa Games/Homa Belly/Attributions/Singular/config.json";
+        public static string CONFIG_FILE_RESOURCES = "Homa Games/Homa Belly/Attributions/Singular/config";
         public const string APP_VERSION_AT_INSTALL = "com.homagames.homabelly.app_version_at_install";
     }
 }

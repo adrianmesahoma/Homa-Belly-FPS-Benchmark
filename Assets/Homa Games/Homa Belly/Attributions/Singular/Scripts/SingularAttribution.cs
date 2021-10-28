@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using HomaGames.HomaBelly.Utilities;
 using UnityEngine;
 
@@ -17,9 +18,11 @@ namespace HomaGames.HomaBelly
             Initialize(appSubversion, null);
         }
 
-        public void Initialize(string appSubversion = "", Action onInitialized = null)
+        public async void Initialize(string appSubversion = "", Action onInitialized = null)
         {
-            configurationData = LoadConfigurationData();
+            var loadTask = LoadConfigurationData();
+            await loadTask;
+            configurationData = loadTask.Result;
             if (configurationData != null)
             {
                 InstantiateSingularSdkGameObject((string)configurationData["s_api_key"], (string)configurationData["s_api_secret"]);
@@ -197,17 +200,10 @@ namespace HomaGames.HomaBelly
 
 #region Private methods
 
-        private Dictionary<string, object> LoadConfigurationData()
+        private async Task<Dictionary<string, object>> LoadConfigurationData()
         {
-#if UNITY_EDITOR
-            if (!File.Exists(HomaBellySingularConstants.CONFIG_FILE))
-            {
-                return null;
-            }
-#endif
-             
-            string configJson = FileUtilities.ReadAllText(HomaBellySingularConstants.CONFIG_FILE);
-            return Json.Deserialize(configJson) as Dictionary<string, object>;
+            return await FileUtilities.LoadAndDeserializeJsonFromResources<Dictionary<string, object>>(HomaBellySingularConstants
+                .CONFIG_FILE_RESOURCES);
         }
 
         /// <summary>
