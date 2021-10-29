@@ -12,6 +12,16 @@ namespace HomaGames.HomaBelly
     public class GameAnalyticsImplementation : IAnalyticsWithInitializationCallback, ICustomDimensions
     {
         #region Public methods
+        
+        // I am not happy with this solution. But because Homa Belly doesn't know beforehand
+        // which services are available, we need to invert the way we create the objects
+        // The problem is that we need to add this code in all implementations 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+        static void RegisterInHomaBelly()
+        {
+            HomaBridge.RegisterAnalytics(new GameAnalyticsImplementation());
+        }
+        
         public void Initialize()
         {
             Initialize(null);

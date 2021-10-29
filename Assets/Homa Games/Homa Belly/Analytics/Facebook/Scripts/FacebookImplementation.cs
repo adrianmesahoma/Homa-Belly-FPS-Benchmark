@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Runtime.CompilerServices;
 using Facebook.Unity;
 using Facebook.Unity.Settings;
 using UnityEngine;
@@ -13,7 +14,18 @@ namespace HomaGames.HomaBelly
     {
         private Stack<UnityAction> delayedActionsUntilInitialization = new Stack<UnityAction>();
 
+        // I am not happy with this solution. But because Homa Belly doesn't know beforehand
+        // which services are available, we need to invert the way we create the objects
+        // The problem is that we need to add this code in all implementations 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+        static void RegisterInHomaBelly()
+        {
+            HomaBridge.RegisterAnalytics(new FacebookImplementation());
+        }
+        
         #region Public methods
+        
+        
         public void Initialize()
         {
             Initialize(null);

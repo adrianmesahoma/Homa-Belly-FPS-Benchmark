@@ -11,6 +11,15 @@ namespace HomaGames.HomaBelly
     {
         private Dictionary<string, object> configurationData;
         
+        // I am not happy with this solution. But because Homa Belly doesn't know beforehand
+        // which services are available, we need to invert the way we create the objects
+        // The problem is that we need to add this code in all implementations 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+        static void RegisterInHomaBelly()
+        {
+            HomaBridge.RegisterAttribution(new SingularAttribution());
+        }
+        
         #region Public methods
 
         public void Initialize(string appSubversion = "")

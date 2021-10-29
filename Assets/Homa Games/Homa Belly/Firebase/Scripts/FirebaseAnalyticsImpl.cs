@@ -3,6 +3,7 @@ using System.Globalization;
 using Firebase;
 using Firebase.Analytics;
 using Firebase.Extensions;
+using UnityEngine;
 
 namespace HomaGames.HomaBelly
 {
@@ -10,6 +11,15 @@ namespace HomaGames.HomaBelly
     {
         private FirebaseApp firebaseApp;
         private bool initialized = false;
+        
+        // I am not happy with this solution. But because Homa Belly doesn't know beforehand
+        // which services are available, we need to invert the way we create the objects
+        // The problem is that we need to add this code in all implementations 
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterAssembliesLoaded)]
+        static void RegisterInHomaBelly()
+        {
+            HomaBridge.RegisterAnalytics(new FirebaseAnalyticsImpl());
+        }
 
         public void Initialize(Action onInitialized = null)
         {

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using HomaGames.HomaBelly.Utilities;
 using UnityEngine;
 using UnityEngine.Profiling;
+using Object = System.Object;
 
 namespace HomaGames.HomaBelly
 {
@@ -15,9 +16,9 @@ namespace HomaGames.HomaBelly
     public class HomaBridge : IHomaBellyBridge
     {
         #region Private properties
-        private List<IMediator> mediators;
-        private List<IAttribution> attributions;
-        private List<IAnalytics> analytics;
+        private static readonly List<IMediator> mediators = new List<IMediator>();
+        private static readonly List<IAttribution> attributions = new List<IAttribution>();
+        private static readonly List<IAnalytics> analytics = new List<IAnalytics>();
         private InitializationStatus initializationStatus = new InitializationStatus();
         private AnalyticsHelper analyticsHelper = new AnalyticsHelper();
         #endregion
@@ -50,17 +51,6 @@ namespace HomaGames.HomaBelly
         /// </summary>
         private void InitializeRemoteConfigurationIndependentComponents()
         {
-            // Instantiate
-            Profiler.BeginSample("[SP] INSTANTIATE MEDIATORS");HomaGamesLog.Debug("[Homa Belly] Initializing Homa Belly after Remote Configuration fetch");
-            InstantiateMediators();
-            Profiler.EndSample();
-            Profiler.BeginSample("[SP] INSTANTIATE ATTRIBUTION");
-            InstantiateAttributions();
-            Profiler.EndSample();
-            Profiler.BeginSample("[SP] INSTANTIATE ANALYTICS");
-            InstantiateAnalytics();
-            Profiler.EndSample();
-
             // Auto-track AdEvents
             Profiler.BeginSample("[SP] REGISTER AD EVENTS ANALYTICS");
             RegisterAdEventsForAnalytics();
@@ -617,9 +607,21 @@ namespace HomaGames.HomaBelly
 
         #region Mediators
 
-        private void InstantiateMediators()
+        public static void RegisterMediator(IMediator mediator)
         {
-            /*// LINQ all available classes implementing IMediator interface
+            if (!mediators.Contains(mediator))
+            {
+                mediators.Add(mediator);
+                HomaGamesLog.Debug($"[Homa Belly] Instantiating {mediator.GetType()}");
+            }
+            else
+            {
+                Debug.LogWarning($"[WARNING] You are registering the mediator: {mediator.GetType()} twice.");
+            }
+        }
+        /*private void InstantiateMediators()
+        {
+            // LINQ all available classes implementing IMediator interface
             List<Type> availableMediators = Reflection.GetHomaBellyAvailableClasses(typeof(IMediator));
 
             // If available mediators found, instantiate them
@@ -642,16 +644,21 @@ namespace HomaGames.HomaBelly
             else
             {
                 HomaGamesLog.Warning("No available mediators found");
-            }*/
+            }
             
-            mediators = new List<IMediator>();
-            mediators.Add(new AppLovinMaxMediator());
-        }
+            //mediators.Add(new AppLovinMaxMediator());
+        }*/
 
         private void InitializeMediators()
         {
             if (mediators != null)
             {
+                if (mediators.Count == 0)
+                {
+                    HomaGamesLog.Warning("No available mediators found");
+                    return;
+                }
+                
                 foreach (IMediator mediator in mediators)
                 {
                     try
@@ -680,10 +687,23 @@ namespace HomaGames.HomaBelly
 #endregion
 
 #region Attributions
-
-        private void InstantiateAttributions()
+ 
+        public static void RegisterAttribution(IAttribution attribution)
         {
-            /*// LINQ all available classes implementing IAttribution interface
+            if (!attributions.Contains(attribution))
+            {
+                attributions.Add(attribution);
+                HomaGamesLog.Debug($"[Homa Belly] Instantiating {attribution.GetType()}");
+            }
+            else
+            {
+                Debug.LogWarning($"[WARNING] You are registering the attribution: {attribution.GetType()} twice.");
+            }
+        }
+
+        /*private void InstantiateAttributions()
+        {
+            // LINQ all available classes implementing IAttribution interface
             List<Type> availableAttributions = Reflection.GetHomaBellyAvailableClasses(typeof(IAttribution));
 
             // If available mediators found, instantiate them
@@ -706,16 +726,21 @@ namespace HomaGames.HomaBelly
             else
             {
                 HomaGamesLog.Warning("No available attributions found");
-            }*/
+            }
             
-            attributions = new List<IAttribution>();
             attributions.Add(new SingularAttribution());
-        }
+        }*/
 
         private void InitializeAttributions()
         {
             if (attributions != null)
             {
+                if (attributions.Count == 0)
+                {
+                    HomaGamesLog.Warning("No available attributions found");
+                    return;
+                }
+                
                 // If Geryon Scope and Variant IDs are found, report it to all Attribution
                 string scopeId = "";
                 string variantId = "";
@@ -755,9 +780,21 @@ namespace HomaGames.HomaBelly
 
 #region Analytics
 
-        private void InstantiateAnalytics()
+        public static void RegisterAnalytics(IAnalytics analytic)
         {
-            /*// LINQ all available classes implementing IAnalytics interface
+            if (!analytics.Contains(analytic))
+            {
+                analytics.Add(analytic);
+                HomaGamesLog.Debug($"[Homa Belly] Instantiating {analytic.GetType()}");
+            }
+            else
+            {
+                Debug.LogWarning($"[WARNING] You are registering the analytics: {analytic.GetType()} twice.");
+            }
+        }
+        /*private void InstantiateAnalytics()
+        {
+            // LINQ all available classes implementing IAnalytics interface
             List<Type> availableAnalytics = Reflection.GetHomaBellyAvailableClasses(typeof(IAnalytics));
 
             // If available mediators found, instantiate them
@@ -780,18 +817,23 @@ namespace HomaGames.HomaBelly
             else
             {
                 HomaGamesLog.Warning("No available analytics found");
-            }*/
+            }
             
-            analytics = new List<IAnalytics>();
             analytics.Add(new FacebookImplementation());
             analytics.Add(new GameAnalyticsImplementation());
             analytics.Add(new FirebaseAnalyticsImpl());
-        }
+        }*/
 
         private void InitializeAnalytics()
         {
             if (analytics != null)
             {
+                if (analytics.Count == 0)
+                {
+                    HomaGamesLog.Warning("No available analytics found");
+                    return;
+                }
+                
                 foreach (IAnalytics analytic in analytics)
                 {
                     try
