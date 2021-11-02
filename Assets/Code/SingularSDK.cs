@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using Newtonsoft.Json;
 using System;
 using System.Threading;
+using System.Threading.Tasks;
 using Facebook.Unity;
 using Task = System.Threading.Tasks.Task;
 #if UNITY_5_3_OR_NEWER && UNITY_PURCHASING
@@ -471,14 +472,15 @@ public class SingularSDK : MonoBehaviour {
 
 #endif
 
-    private static bool StartSingularSession(SingularConfig config) {
+    private static async Task<bool> StartSingularSession(SingularConfig config) {
         if (!Application.isEditor) {
 #if UNITY_IOS
             RegisterDeferredDeepLinkHandler_();
 
             SetWrapperNameAndVersion_(UNITY_WRAPPER_NAME, UNITY_VERSION);
 
-            return StartSingularSession_(config.ToJsonString());
+            string json = await config.ToJsonString();
+            return StartSingularSession_(json);
 #endif
         }
 
@@ -1473,8 +1475,15 @@ public class SingularSDK : MonoBehaviour {
             _configValues[key] = value;
         }
 
-        public string ToJsonString() {
-            return JsonConvert.SerializeObject(_configValues);
+        public async Task<string> ToJsonString()
+        {
+            string json = null;
+            await Task.Run(delegate
+            {
+                json = JsonConvert.SerializeObject(_configValues);
+            });
+
+            return json;
         }
     }
 
