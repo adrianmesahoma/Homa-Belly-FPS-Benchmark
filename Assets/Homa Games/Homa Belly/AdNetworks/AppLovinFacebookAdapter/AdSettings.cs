@@ -52,7 +52,8 @@ namespace AudienceNetwork
             bool authorized = false;
             try
             {
-                Type appTrackingTransparencyType = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
+                authorized = HomaGames.GDPR.AppTrackingTransparency.TrackingAuthorizationStatus.ToString() == "AUTHORIZED";
+                /*Type appTrackingTransparencyType = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
                                        from type in assembly.GetTypes()
                                        where type.Namespace == "HomaGames.GDPR" && type.Name == "AppTrackingTransparency"
                                        select type).FirstOrDefault();
@@ -68,7 +69,7 @@ namespace AudienceNetwork
                             HomaGamesLog.Debug($"AppTrackingTransparency TrackingAuthorizationStatus found: {authorizationStatusValue}");
                         }
                     }
-                }
+                }*/
             }
             catch (Exception e)
             {
