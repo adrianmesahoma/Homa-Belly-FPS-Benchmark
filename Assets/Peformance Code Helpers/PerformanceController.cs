@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 using HomaGames.HomaBelly;
 using UnityEngine;
 using Facebook.Unity;
+using GameAnalyticsSDK;
 using GameAnalyticsSDK.Events;
+using GameAnalyticsSDK.Wrapper;
 using Newtonsoft.Json;
 using UnityEngine.Networking;
 
@@ -97,150 +99,6 @@ public class PerformanceController : MonoBehaviour
         Dictionary<string,object> result = await FileUtilities.LoadAndDeserializeJsonFromResources<Dictionary<string, object>>(RemoteConfigurationConstants
             .TRACKING_FILE_RESOURCES);
         Debug.Log("LOAED "+result.Count);
-    }
-
-    private async void ReadAsync()
-    {
-        Debug.Log("ReadAsync");
-        string result = null;
-        try	
-        {
-            var path = HomaBellyAppLovinMaxConstants.CONFIG_FILE;
-            
-            if (path.Contains("://") || path.Contains(":///"))
-            {
-                // Wait until async operation has finished
-                UnityWebRequest www = UnityWebRequest.Get(path);
-                www.SendWebRequest();
-                await Task.Run(delegate
-                {
-                    while(!www.isDone)
-                    {
-                        continue;
-                    }
-                });
-                result =  www.downloadHandler.text;
-            }
-            else
-            {
-                result = File.ReadAllText(path);
-            }
-        }
-        catch(HttpRequestException e)
-        {
-            Debug.LogError("\nException Caught!");	
-            Debug.LogErrorFormat("Message :{0} ",e.Message);
-        }
-
-        Debug.Log("RESULT: "+result);
-    }
-    
-    private async void ReadAsync1()
-    {
-        Debug.Log("ReadAsync1");
-        string result = null;
-        try	
-        {
-            var path = HomaBellyAppLovinMaxConstants.CONFIG_FILE;
-            
-            if (path.Contains("://") || path.Contains(":///"))
-            {
-                // Wait until async operation has finished
-                UnityWebRequest www = UnityWebRequest.Get(path);
-                www.SendWebRequest();
-                await Task.Run(delegate
-                {
-                    while(!www.isDone)
-                    {
-                        continue;
-                    }
-                    result =  www.downloadHandler.text;
-                });
-            }
-            else
-            {
-                result = File.ReadAllText(path);
-            }
-        }
-        catch(HttpRequestException e)
-        {
-            Debug.LogError("\nException Caught!");	
-            Debug.LogErrorFormat("Message :{0} ",e.Message);
-        }
-
-        Debug.Log("RESULT: "+result);
-    }
-    
-    private async void ReadAsync2()
-    {
-        Debug.Log("ReadAsync2");
-        string result = null;
-        try	
-        {
-            var path = HomaBellyAppLovinMaxConstants.CONFIG_FILE;
-            
-            if (path.Contains("://") || path.Contains(":///"))
-            {
-                // Wait until async operation has finished
-                UnityWebRequest www = UnityWebRequest.Get(path);
-                await Task.Run(delegate
-                {
-                    www.SendWebRequest();
-                    while(!www.isDone)
-                    {
-                        continue;
-                    }
-                    result =  www.downloadHandler.text;
-                });
-            }
-            else
-            {
-                result = File.ReadAllText(path);
-            }
-        }
-        catch(HttpRequestException e)
-        {
-            Debug.LogError("\nException Caught!");	
-            Debug.LogErrorFormat("Message :{0} ",e.Message);
-        }
-
-        Debug.Log("RESULT: "+result);
-    }
-    
-    private async void ReadAsync3()
-    {
-        Debug.Log("ReadAsync3");
-        string result = null;
-        try	
-        {
-            var path = HomaBellyAppLovinMaxConstants.CONFIG_FILE;
-            
-            if (path.Contains("://") || path.Contains(":///"))
-            {
-                // Wait until async operation has finished
-                await Task.Run(delegate
-                {
-                    UnityWebRequest www = UnityWebRequest.Get(path);
-                    www.SendWebRequest();
-                    while(!www.isDone)
-                    {
-                        continue;
-                    }
-                    result =  www.downloadHandler.text;
-                });
-            }
-            else
-            {
-                result = File.ReadAllText(path);
-            }
-        }
-        catch(HttpRequestException e)
-        {
-            Debug.LogError("\nException Caught!");	
-            Debug.LogErrorFormat("Message :{0} ",e.Message);
-        }
-
-        Debug.Log("RESULT: "+result);
     }
 
     public void GPDRTest()
