@@ -65,12 +65,12 @@ namespace HomaGames.HomaBelly
 				}
 			};
 
-			await Task.Run(delegate
+			await Task.Run(async delegate
 			{
 				while (!completed)
 				{
 					// Wait one frame
-					Thread.Sleep(16);
+					await Task.Delay(16);
 				}
 				
 				if (!loadSucceeded)

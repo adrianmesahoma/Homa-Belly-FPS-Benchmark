@@ -810,7 +810,7 @@ public class MaxSdkAndroid : MaxSdkBase
     /// <param name="enabled"><c>true</c> if verbose logging should be enabled.</param>
     public static async void SetVerboseLogging(bool enabled)
     {
-        _ = Task.Run(delegate
+        await Task.Run(delegate
         {
             AndroidJNI.AttachCurrentThread();
             MaxUnityPluginClass.CallStatic("setVerboseLogging", enabled);
