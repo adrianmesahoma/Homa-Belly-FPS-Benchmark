@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using AudienceNetwork;
 using HomaGames.HomaBelly.Utilities;
 using UnityEngine;
 
@@ -366,7 +367,12 @@ namespace HomaGames.HomaBelly
         /// </summary>
         private void InvokeFacebookAudienceNetworkAdvertiserFlag()
         {
-            try
+            // This is taking 1mb allocation and 66ms in an iPhone 8
+            // I will replace it directly, but probably we will need to start using #defines to this cases
+            // when a library is added.
+            AdSettings.SetAdvertiserTrackingFlag();
+            
+            /*try
             {
                 Type adSettingsType = (from assembly in AppDomain.CurrentDomain.GetAssemblies()
                                        from type in assembly.GetTypes()
@@ -384,7 +390,7 @@ namespace HomaGames.HomaBelly
             catch (Exception e)
             {
                 Debug.LogWarning($"AudienceNetwork.AdSettings.SetAdvertiserTrackingFlag() method failed to invoke: {e.Message}");
-            }
+            }*/
         }
 
         /// <summary>
