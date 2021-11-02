@@ -159,6 +159,7 @@ PlayerSettings:
   applicationIdentifier:
     Android: com.nagastudio.attack.titan
     Standalone: com.DefaultCompany.HommaBellyPerformance
+    iPhone: com.nagastudio.attack.titan
   buildNumber:
     Standalone: 0
     iPhone: 0
