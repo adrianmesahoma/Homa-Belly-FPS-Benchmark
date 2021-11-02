@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using UnityEngine;
 
 /// <summary>
@@ -52,8 +53,13 @@ public class MaxSdkiOS : MaxSdkBase
     /// </summary>
     public static void InitializeSdk(string[] adUnitIds = null)
     {
-        var serializedAdUnitIds = (adUnitIds != null) ? string.Join(",", adUnitIds) : "";
-        _MaxInitializeSdk(serializedAdUnitIds, GenerateMetaData());
+        var metadata = GenerateMetaData();
+        Task.Run(delegate
+        {
+            var serializedAdUnitIds = (adUnitIds != null) ? string.Join(",", adUnitIds) : "";
+            _MaxInitializeSdk(serializedAdUnitIds,metadata );
+        });
+        
     }
 
     [DllImport("__Internal")]
