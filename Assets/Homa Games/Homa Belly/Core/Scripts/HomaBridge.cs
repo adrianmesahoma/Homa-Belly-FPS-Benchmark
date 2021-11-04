@@ -16,9 +16,6 @@ namespace HomaGames.HomaBelly
     public class HomaBridge : IHomaBellyBridge
     {
         #region Private properties
-        private static readonly List<IMediator> mediators = new List<IMediator>();
-        private static readonly List<IAttribution> attributions = new List<IAttribution>();
-        private static readonly List<IAnalytics> analytics = new List<IAnalytics>();
         private InitializationStatus initializationStatus = new InitializationStatus();
         private AnalyticsHelper analyticsHelper = new AnalyticsHelper();
         #endregion
@@ -51,6 +48,10 @@ namespace HomaGames.HomaBelly
         /// </summary>
         private void InitializeRemoteConfigurationIndependentComponents()
         {
+            Profiler.BeginSample("[SP] INSTANTIATE SERVICES");
+            HomaBridgeDependencies.InstantiateServices();
+            Profiler.EndSample();
+            
             // Auto-track AdEvents
             Profiler.BeginSample("[SP] REGISTER AD EVENTS ANALYTICS");
             RegisterAdEventsForAnalytics();
@@ -96,27 +97,27 @@ namespace HomaGames.HomaBelly
         public void ValidateIntegration()
         {
             // Mediators
-            if (mediators != null)
+            if (HomaBridgeDependencies.Mediators != null)
             {
-                foreach (IMediator mediator in mediators)
+                foreach (IMediator mediator in HomaBridgeDependencies.Mediators)
                 {
                     mediator.ValidateIntegration();
                 }
             }
 
             // Attributions
-            if (attributions != null)
+            if (HomaBridgeDependencies.Attributions != null)
             {
-                foreach (IAttribution attribution in attributions)
+                foreach (IAttribution attribution in HomaBridgeDependencies.Attributions)
                 {
                     attribution.ValidateIntegration();
                 }
             }
 
             // Analytics
-            if (analytics != null)
+            if (HomaBridgeDependencies.Analytics != null)
             {
-                foreach (IAnalytics analytic in analytics)
+                foreach (IAnalytics analytic in HomaBridgeDependencies.Analytics)
                 {
                     analytic.ValidateIntegration();
                 }
@@ -129,18 +130,18 @@ namespace HomaGames.HomaBelly
             analyticsHelper.OnApplicationPause(pause);
 
             // Mediators
-            if (mediators != null)
+            if (HomaBridgeDependencies.Mediators != null)
             {
-                foreach (IMediator mediator in mediators)
+                foreach (IMediator mediator in HomaBridgeDependencies.Mediators)
                 {
                     mediator.OnApplicationPause(pause);
                 }
             }
 
             // Attributions
-            if (attributions != null)
+            if (HomaBridgeDependencies.Attributions != null)
             {
-                foreach (IAttribution attribution in attributions)
+                foreach (IAttribution attribution in HomaBridgeDependencies.Attributions)
                 {
                     attribution.OnApplicationPause(pause);
                 }
@@ -153,9 +154,9 @@ namespace HomaGames.HomaBelly
         {
             TrackAdEvent(AdAction.Request, AdType.RewardedVideo, "homagames.homabelly.default", placementId);
 
-            if (mediators != null)
+            if (HomaBridgeDependencies.Mediators != null)
             {
-                foreach (IMediator mediator in mediators)
+                foreach (IMediator mediator in HomaBridgeDependencies.Mediators)
                 {
                     mediator.ShowRewardedVideoAd(placementId);
                 }
@@ -165,9 +166,9 @@ namespace HomaGames.HomaBelly
         public bool IsRewardedVideoAdAvailable(string placementId = null)
         {
             bool available = false;
-            if (mediators != null)
+            if (HomaBridgeDependencies.Mediators != null)
             {
-                foreach (IMediator mediator in mediators)
+                foreach (IMediator mediator in HomaBridgeDependencies.Mediators)
                 {
                     available |= mediator.IsRewardedVideoAdAvailable();
                 }
@@ -181,9 +182,9 @@ namespace HomaGames.HomaBelly
         {
             TrackAdEvent(AdAction.Request, AdType.Banner, "homagames.homabelly.default", placementId);
 
-            if (mediators != null)
+            if (HomaBridgeDependencies.Mediators != null)
             {
-                foreach (IMediator mediator in mediators)
+                foreach (IMediator mediator in HomaBridgeDependencies.Mediators)
                 {
                     mediator.LoadBanner(size, position, placementId, bannerBackgroundColor);
                 }
@@ -192,9 +193,9 @@ namespace HomaGames.HomaBelly
 
         public void ShowBanner(string placementId = null)
         {
-            if (mediators != null)
+            if (HomaBridgeDependencies.Mediators != null)
             {
-                foreach (IMediator mediator in mediators)
+                foreach (IMediator mediator in HomaBridgeDependencies.Mediators)
                 {
                     mediator.ShowBanner();
                 }
@@ -203,9 +204,9 @@ namespace HomaGames.HomaBelly
 
         public void HideBanner(string placementId = null)
         {
-            if (mediators != null)
+            if (HomaBridgeDependencies.Mediators != null)
             {
-                foreach (IMediator mediator in mediators)
+                foreach (IMediator mediator in HomaBridgeDependencies.Mediators)
                 {
                     mediator.HideBanner();
                 }
@@ -214,9 +215,9 @@ namespace HomaGames.HomaBelly
 
         public void DestroyBanner(string placementId = null)
         {
-            if (mediators != null)
+            if (HomaBridgeDependencies.Mediators != null)
             {
-                foreach (IMediator mediator in mediators)
+                foreach (IMediator mediator in HomaBridgeDependencies.Mediators)
                 {
                     mediator.DestroyBanner();
                 }
@@ -225,9 +226,9 @@ namespace HomaGames.HomaBelly
 
         public void ShowInsterstitial(string placementId = null)
         {
-            if (mediators != null)
+            if (HomaBridgeDependencies.Mediators != null)
             {
-                foreach (IMediator mediator in mediators)
+                foreach (IMediator mediator in HomaBridgeDependencies.Mediators)
                 {
                     mediator.ShowInterstitial(placementId);
                 }
@@ -237,9 +238,9 @@ namespace HomaGames.HomaBelly
         public bool IsInterstitialAvailable(string placementId = null)
         {
             bool available = false;
-            if (mediators != null)
+            if (HomaBridgeDependencies.Mediators != null)
             {
-                foreach (IMediator mediator in mediators)
+                foreach (IMediator mediator in HomaBridgeDependencies.Mediators)
                 {
                     available |= mediator.IsInterstitialAvailable();
                 }
@@ -250,28 +251,28 @@ namespace HomaGames.HomaBelly
 
         public void SetUserIsAboveRequiredAge(bool consent)
         {
-            // For mediators
-            if (mediators != null)
+            // For HomaBridgeDependencies.Mediators
+            if (HomaBridgeDependencies.Mediators != null)
             {
-                foreach (IMediator mediator in mediators)
+                foreach (IMediator mediator in HomaBridgeDependencies.Mediators)
                 {
                     mediator.SetUserIsAboveRequiredAge(consent);
                 }
             }
 
             // For attributions
-            if (attributions != null)
+            if (HomaBridgeDependencies.Attributions != null)
             {
-                foreach (IAttribution attribution in attributions)
+                foreach (IAttribution attribution in HomaBridgeDependencies.Attributions)
                 {
                     attribution.SetUserIsAboveRequiredAge(consent);
                 }
             }
 
             // For analytics
-            if (analytics != null)
+            if (HomaBridgeDependencies.Analytics != null)
             {
-                foreach (IAnalytics analytic in analytics)
+                foreach (IAnalytics analytic in HomaBridgeDependencies.Analytics)
                 {
                     analytic.SetUserIsAboveRequiredAge(consent);
                 }
@@ -281,27 +282,27 @@ namespace HomaGames.HomaBelly
         public void SetTermsAndConditionsAcceptance(bool consent)
         {
             // For mediators
-            if (mediators != null)
+            if (HomaBridgeDependencies.Mediators != null)
             {
-                foreach (IMediator mediator in mediators)
+                foreach (IMediator mediator in HomaBridgeDependencies.Mediators)
                 {
                     mediator.SetTermsAndConditionsAcceptance(consent);
                 }
             }
 
             // For attributions
-            if (attributions != null)
+            if (HomaBridgeDependencies.Attributions != null)
             {
-                foreach (IAttribution attribution in attributions)
+                foreach (IAttribution attribution in HomaBridgeDependencies.Attributions)
                 {
                     attribution.SetTermsAndConditionsAcceptance(consent);
                 }
             }
 
             // For analytics
-            if (analytics != null)
+            if (HomaBridgeDependencies.Analytics != null)
             {
-                foreach (IAnalytics analytic in analytics)
+                foreach (IAnalytics analytic in HomaBridgeDependencies.Analytics)
                 {
                     analytic.SetTermsAndConditionsAcceptance(consent);
                 }
@@ -311,27 +312,27 @@ namespace HomaGames.HomaBelly
         public void SetAnalyticsTrackingConsentGranted(bool consent)
         {
             // For mediators
-            if (mediators != null)
+            if (HomaBridgeDependencies.Mediators != null)
             {
-                foreach (IMediator mediator in mediators)
+                foreach (IMediator mediator in HomaBridgeDependencies.Mediators)
                 {
                     mediator.SetAnalyticsTrackingConsentGranted(consent);
                 }
             }
 
             // For attributions
-            if (attributions != null)
+            if (HomaBridgeDependencies.Attributions != null)
             {
-                foreach (IAttribution attribution in attributions)
+                foreach (IAttribution attribution in HomaBridgeDependencies.Attributions)
                 {
                     attribution.SetAnalyticsTrackingConsentGranted(consent);
                 }
             }
 
             // For analytics
-            if (analytics != null)
+            if (HomaBridgeDependencies.Analytics != null)
             {
-                foreach (IAnalytics analytic in analytics)
+                foreach (IAnalytics analytic in HomaBridgeDependencies.Analytics)
                 {
                     analytic.SetAnalyticsTrackingConsentGranted(consent);
                 }
@@ -341,27 +342,27 @@ namespace HomaGames.HomaBelly
         public void SetTailoredAdsConsentGranted(bool consent)
         {
             // For mediators
-            if (mediators != null)
+            if (HomaBridgeDependencies.Mediators != null)
             {
-                foreach (IMediator mediator in mediators)
+                foreach (IMediator mediator in HomaBridgeDependencies.Mediators)
                 {
                     mediator.SetTailoredAdsConsentGranted(consent);
                 }
             }
 
             // For attributions
-            if (attributions != null)
+            if (HomaBridgeDependencies.Attributions != null)
             {
-                foreach (IAttribution attribution in attributions)
+                foreach (IAttribution attribution in HomaBridgeDependencies.Attributions)
                 {
                     attribution.SetTailoredAdsConsentGranted(consent);
                 }
             }
 
             // For analytics
-            if (analytics != null)
+            if (HomaBridgeDependencies.Analytics != null)
             {
-                foreach (IAnalytics analytic in analytics)
+                foreach (IAnalytics analytic in HomaBridgeDependencies.Analytics)
                 {
                     analytic.SetTailoredAdsConsentGranted(consent);
                 }
@@ -372,18 +373,18 @@ namespace HomaGames.HomaBelly
         public void TrackInAppPurchaseEvent(UnityEngine.Purchasing.Product product, bool isRestored = false)
         {
             // For attributions
-            if (attributions != null)
+            if (HomaBridgeDependencies.Attributions != null)
             {
-                foreach (IAttribution attribution in attributions)
+                foreach (IAttribution attribution in HomaBridgeDependencies.Attributions)
                 {
                     attribution.TrackInAppPurchaseEvent(product, isRestored);
                 }
             }
 
             // For analytics
-            if (analytics != null)
+            if (HomaBridgeDependencies.Analytics != null)
             {
-                foreach (IAnalytics analytic in analytics)
+                foreach (IAnalytics analytic in HomaBridgeDependencies.Analytics)
                 {
                     analytic.TrackInAppPurchaseEvent(product, isRestored);
                 }
@@ -396,18 +397,18 @@ namespace HomaGames.HomaBelly
             // IAP events are applicable to Attributions and Analytics
 
             // For attributions
-            if (attributions != null)
+            if (HomaBridgeDependencies.Attributions != null)
             {
-                foreach (IAttribution attribution in attributions)
+                foreach (IAttribution attribution in HomaBridgeDependencies.Attributions)
                 {
                     attribution.TrackInAppPurchaseEvent(productId, currencyCode, unitPrice, transactionId, payload);
                 }
             }
 
             // For analytics
-            if (analytics != null)
+            if (HomaBridgeDependencies.Analytics != null)
             {
-                foreach (IAnalytics analytic in analytics)
+                foreach (IAnalytics analytic in HomaBridgeDependencies.Analytics)
                 {
                     analytic.TrackInAppPurchaseEvent(productId, currencyCode, unitPrice, transactionId, payload);
                 }
@@ -416,9 +417,9 @@ namespace HomaGames.HomaBelly
 
         public void TrackResourceEvent(ResourceFlowType flowType, string currency, float amount, string itemType, string itemId)
         {
-            if (analytics != null)
+            if (HomaBridgeDependencies.Analytics != null)
             {
-                foreach (IAnalytics analytic in analytics)
+                foreach (IAnalytics analytic in HomaBridgeDependencies.Analytics)
                 {
                     analytic.TrackResourceEvent(flowType, currency, amount, itemType, itemId);
                 }
@@ -427,9 +428,9 @@ namespace HomaGames.HomaBelly
 
         public void TrackProgressionEvent(ProgressionStatus progressionStatus, string progression01, int score = 0)
         {
-            if (analytics != null)
+            if (HomaBridgeDependencies.Analytics != null)
             {
-                foreach (IAnalytics analytic in analytics)
+                foreach (IAnalytics analytic in HomaBridgeDependencies.Analytics)
                 {
                     analytic.TrackProgressionEvent(progressionStatus, progression01, score);
                 }
@@ -438,9 +439,9 @@ namespace HomaGames.HomaBelly
 
         public void TrackProgressionEvent(ProgressionStatus progressionStatus, string progression01, string progression02, int score = 0)
         {
-            if (analytics != null)
+            if (HomaBridgeDependencies.Analytics != null)
             {
-                foreach (IAnalytics analytic in analytics)
+                foreach (IAnalytics analytic in HomaBridgeDependencies.Analytics)
                 {
                     analytic.TrackProgressionEvent(progressionStatus, progression01, progression02, score);
                 }
@@ -449,9 +450,9 @@ namespace HomaGames.HomaBelly
 
         public void TrackProgressionEvent(ProgressionStatus progressionStatus, string progression01, string progression02, string progression03, int score = 0)
         {
-            if (analytics != null)
+            if (HomaBridgeDependencies.Analytics != null)
             {
-                foreach (IAnalytics analytic in analytics)
+                foreach (IAnalytics analytic in HomaBridgeDependencies.Analytics)
                 {
                     analytic.TrackProgressionEvent(progressionStatus, progression01, progression02, progression03, score);
                 }
@@ -460,9 +461,9 @@ namespace HomaGames.HomaBelly
 
         public void TrackErrorEvent(ErrorSeverity severity, string message)
         {
-            if (analytics != null)
+            if (HomaBridgeDependencies.Analytics != null)
             {
-                foreach (IAnalytics analytic in analytics)
+                foreach (IAnalytics analytic in HomaBridgeDependencies.Analytics)
                 {
                     analytic.TrackErrorEvent(severity, message);
                 }
@@ -471,9 +472,9 @@ namespace HomaGames.HomaBelly
 
         public void TrackDesignEvent(string eventName, float eventValue = 0f)
         {
-            if (analytics != null)
+            if (HomaBridgeDependencies.Analytics != null)
             {
-                foreach (IAnalytics analytic in analytics)
+                foreach (IAnalytics analytic in HomaBridgeDependencies.Analytics)
                 {
                     analytic.TrackDesignEvent(eventName, eventValue);
                 }
@@ -482,9 +483,9 @@ namespace HomaGames.HomaBelly
 
         public void TrackAdEvent(AdAction adAction, AdType adType, string adNetwork, string adPlacementId)
         {
-            if (analytics != null)
+            if (HomaBridgeDependencies.Analytics != null)
             {
-                foreach (IAnalytics analytic in analytics)
+                foreach (IAnalytics analytic in HomaBridgeDependencies.Analytics)
                 {
                     analytic.TrackAdEvent(adAction, adType, adNetwork, adPlacementId);
                 }
@@ -493,9 +494,9 @@ namespace HomaGames.HomaBelly
 
         public void TrackAdRevenue(AdRevenueData adRevenueData)
         {
-            if (attributions != null)
+            if (HomaBridgeDependencies.Attributions != null)
             {
-                foreach (IAttribution attribution in attributions)
+                foreach (IAttribution attribution in HomaBridgeDependencies.Attributions)
                 {
                     attribution.TrackAdRevenue(adRevenueData);
                 }
@@ -504,9 +505,9 @@ namespace HomaGames.HomaBelly
 
         public void TrackAttributionEvent(string eventName, Dictionary<string, object> arguments = null)
         {
-            if (attributions != null)
+            if (HomaBridgeDependencies.Attributions != null)
             {
-                foreach (IAttribution attribution in attributions)
+                foreach (IAttribution attribution in HomaBridgeDependencies.Attributions)
                 {
                     attribution.TrackEvent(eventName, arguments);
                 }
@@ -515,9 +516,9 @@ namespace HomaGames.HomaBelly
 
         public void SetCustomDimension01(string customDimension)
         {
-            if (analytics != null)
+            if (HomaBridgeDependencies.Analytics != null)
             {
-                foreach (IAnalytics analytic in analytics)
+                foreach (IAnalytics analytic in HomaBridgeDependencies.Analytics)
                 {
                     if (typeof(ICustomDimensions).IsInstanceOfType(analytic))
                     {
@@ -529,9 +530,9 @@ namespace HomaGames.HomaBelly
 
         public void SetCustomDimension02(string customDimension)
         {
-            if (analytics != null)
+            if (HomaBridgeDependencies.Analytics != null)
             {
-                foreach (IAnalytics analytic in analytics)
+                foreach (IAnalytics analytic in HomaBridgeDependencies.Analytics)
                 {
                     if (typeof(ICustomDimensions).IsInstanceOfType(analytic))
                     {
@@ -543,9 +544,9 @@ namespace HomaGames.HomaBelly
 
         public void SetCustomDimension03(string customDimension)
         {
-            if (analytics != null)
+            if (HomaBridgeDependencies.Analytics != null)
             {
-                foreach (IAnalytics analytic in analytics)
+                foreach (IAnalytics analytic in HomaBridgeDependencies.Analytics)
                 {
                     if (typeof(ICustomDimensions).IsInstanceOfType(analytic))
                     {
@@ -607,59 +608,17 @@ namespace HomaGames.HomaBelly
 
         #region Mediators
 
-        public static void RegisterMediator(IMediator mediator)
-        {
-            if (!mediators.Contains(mediator))
-            {
-                mediators.Add(mediator);
-                HomaGamesLog.Debug($"[Homa Belly] Instantiating {mediator.GetType()}");
-            }
-            else
-            {
-                Debug.LogWarning($"[WARNING] You are registering the mediator: {mediator.GetType()} twice.");
-            }
-        }
-        /*private void InstantiateMediators()
-        {
-            // LINQ all available classes implementing IMediator interface
-            List<Type> availableMediators = Reflection.GetHomaBellyAvailableClasses(typeof(IMediator));
-
-            // If available mediators found, instantiate them
-            if (availableMediators != null && availableMediators.Count > 0)
-            {
-                mediators = new List<IMediator>();
-                foreach (Type type in availableMediators)
-                {
-                    try
-                    {
-                        HomaGamesLog.Debug($"[Homa Belly] Instantiating {type}");
-                        mediators.Add(Activator.CreateInstance(type) as IMediator);
-                    }
-                    catch (Exception e)
-                    {
-                        HomaGamesLog.Warning($"[Homa Belly] Exception instantiating {type}: {e.Message}");
-                    }
-                }
-            }
-            else
-            {
-                HomaGamesLog.Warning("No available mediators found");
-            }
-            
-            //mediators.Add(new AppLovinMaxMediator());
-        }*/
-
         private void InitializeMediators()
         {
-            if (mediators != null)
+            if (HomaBridgeDependencies.Mediators != null)
             {
-                if (mediators.Count == 0)
+                if (HomaBridgeDependencies.Mediators.Count == 0)
                 {
                     HomaGamesLog.Warning("No available mediators found");
                     return;
                 }
                 
-                foreach (IMediator mediator in mediators)
+                foreach (IMediator mediator in HomaBridgeDependencies.Mediators)
                 {
                     try
                     {
@@ -687,55 +646,13 @@ namespace HomaGames.HomaBelly
 #endregion
 
 #region Attributions
- 
-        public static void RegisterAttribution(IAttribution attribution)
-        {
-            if (!attributions.Contains(attribution))
-            {
-                attributions.Add(attribution);
-                HomaGamesLog.Debug($"[Homa Belly] Instantiating {attribution.GetType()}");
-            }
-            else
-            {
-                Debug.LogWarning($"[WARNING] You are registering the attribution: {attribution.GetType()} twice.");
-            }
-        }
 
-        /*private void InstantiateAttributions()
-        {
-            // LINQ all available classes implementing IAttribution interface
-            List<Type> availableAttributions = Reflection.GetHomaBellyAvailableClasses(typeof(IAttribution));
-
-            // If available mediators found, instantiate them
-            if (availableAttributions != null && availableAttributions.Count > 0)
-            {
-                attributions = new List<IAttribution>();
-                foreach (Type type in availableAttributions)
-                {
-                    try
-                    {
-                        HomaGamesLog.Debug($"[Homa Belly] Instantiating {type}");
-                        attributions.Add(Activator.CreateInstance(type) as IAttribution);
-                    }
-                    catch (Exception e)
-                    {
-                        HomaGamesLog.Warning($"[Homa Belly] Exception instantiating {type}: {e.Message}");
-                    }
-                }
-            }
-            else
-            {
-                HomaGamesLog.Warning("No available attributions found");
-            }
-            
-            attributions.Add(new SingularAttribution());
-        }*/
 
         private void InitializeAttributions()
         {
-            if (attributions != null)
+            if (HomaBridgeDependencies.Attributions != null)
             {
-                if (attributions.Count == 0)
+                if (HomaBridgeDependencies.Attributions.Count == 0)
                 {
                     HomaGamesLog.Warning("No available attributions found");
                     return;
@@ -751,7 +668,7 @@ namespace HomaGames.HomaBelly
                     {
                         variantId = variantIdTaskResult.Result;
 
-                        foreach (IAttribution attribution in attributions)
+                        foreach (IAttribution attribution in HomaBridgeDependencies.Attributions)
                         {
                             try
                             {
@@ -780,61 +697,17 @@ namespace HomaGames.HomaBelly
 
 #region Analytics
 
-        public static void RegisterAnalytics(IAnalytics analytic)
-        {
-            if (!analytics.Contains(analytic))
-            {
-                analytics.Add(analytic);
-                HomaGamesLog.Debug($"[Homa Belly] Instantiating {analytic.GetType()}");
-            }
-            else
-            {
-                Debug.LogWarning($"[WARNING] You are registering the analytics: {analytic.GetType()} twice.");
-            }
-        }
-        /*private void InstantiateAnalytics()
-        {
-            // LINQ all available classes implementing IAnalytics interface
-            List<Type> availableAnalytics = Reflection.GetHomaBellyAvailableClasses(typeof(IAnalytics));
-
-            // If available mediators found, instantiate them
-            if (availableAnalytics != null && availableAnalytics.Count > 0)
-            {
-                analytics = new List<IAnalytics>();
-                foreach (Type type in availableAnalytics)
-                {
-                    try
-                    {
-                        HomaGamesLog.Debug($"[Homa Belly] Instantiating {type}");
-                        analytics.Add(Activator.CreateInstance(type) as IAnalytics);
-                    }
-                    catch (Exception e)
-                    {
-                        HomaGamesLog.Warning($"[Homa Belly] Exception instantiating {type}: {e.Message}");
-                    }
-                }
-            }
-            else
-            {
-                HomaGamesLog.Warning("No available analytics found");
-            }
-            
-            analytics.Add(new FacebookImplementation());
-            analytics.Add(new GameAnalyticsImplementation());
-            analytics.Add(new FirebaseAnalyticsImpl());
-        }*/
-
         private void InitializeAnalytics()
         {
-            if (analytics != null)
+            if (HomaBridgeDependencies.Analytics != null)
             {
-                if (analytics.Count == 0)
+                if (HomaBridgeDependencies.Analytics.Count == 0)
                 {
                     HomaGamesLog.Warning("No available analytics found");
                     return;
                 }
                 
-                foreach (IAnalytics analytic in analytics)
+                foreach (IAnalytics analytic in HomaBridgeDependencies.Analytics)
                 {
                     try
                     {
