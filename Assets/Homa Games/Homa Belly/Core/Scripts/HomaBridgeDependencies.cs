@@ -8,7 +8,7 @@ using UnityEngine;
 namespace HomaGames.HomaBelly
 {
     /// <summary>
-    /// This class will generate other partial classes with some code to grab Homa Bridge dependencies and call to its constructors.
+    /// This partial class will generate other partial classes with some code to grab Homa Bridge dependencies and call to its constructors.
     /// This allow us to add/remove new services updating the manifest and use direct references to new services instead of using reflection.
     /// </summary>
     public partial class HomaBridgeDependencies
@@ -23,24 +23,34 @@ namespace HomaGames.HomaBelly
         public static List<IAttribution> Attributions => attributions;
         public static List<IAnalytics> Analytics => analytics;
 
-        [MenuItem("Tools/Homa Belly/Force Homa Bridge Dependencies Generation")]
-        //[InitializeOnLoadMethod]
+        [InitializeOnLoadMethod]
         private static void AutoGenerateCode()
+        {
+            AutoGenerateCode(false);
+        }
+        
+        [MenuItem("Tools/Homa Belly/Force Homa Bridge Code Generation")]
+        private static void AutoGenerateCodeForced()
+        {
+            AutoGenerateCode(true);
+        }
+
+        private static void AutoGenerateCode(bool force)
         {
             AutoGenerateInitializationFile("HomaBridgeDependenciesMediators",
                 nameof(PartialInitializeMediators),
                 nameof(mediators),
-                typeof(IMediator));
+                typeof(IMediator),force);
             
             AutoGenerateInitializationFile("HomaBridgeDependenciesAttributions",
                 nameof(PartialInitializeAttributions),
                 nameof(attributions),
-                typeof(IAttribution));
+                typeof(IAttribution),force);
             
             AutoGenerateInitializationFile("HomaBridgeDependenciesAnalytics",
                 nameof(PartialInitializeAnalytics),
                 nameof(analytics),
-                typeof(IAnalytics));
+                typeof(IAnalytics),force);
         }
 
         static partial void PartialInitializeMediators();
@@ -56,40 +66,51 @@ namespace HomaGames.HomaBelly
             PartialInitializeAnalytics();
         }
 
-        private static void AutoGenerateInitializationFile(string fileName,string methodName,string servicesListName,Type serviceType)
+        private static void AutoGenerateInitializationFile(string fileName,
+            string methodName,
+            string servicesListName,
+            Type serviceType,
+            bool force)
         {
             // To avoid overriding and generating a file everytime there is a domain reload,
             // check if something has changed first.
-            
+
             var completeFilePath = $"{AUTO_GENERATED_SCRIPTS_PARENT_FOLDER}{fileName}.cs";
-            bool fileExist = File.Exists(completeFilePath);
-            
             var availableServices = Reflection.GetHomaBellyAvailableClasses(serviceType);
-            string servicesHash = "";
-            if (availableServices != null)
-            {
-                servicesHash = string.Join(",", availableServices);
-            }
-
-            bool servicesHashMatch = false;
-            var editorPrefsServiceKey = $"Key{serviceType.Name}";
-            if (!EditorPrefs.HasKey(editorPrefsServiceKey))
-            {
-                EditorPrefs.SetString(editorPrefsServiceKey,servicesHash);
-            }
-            else
-            {
-                servicesHashMatch = EditorPrefs.GetString(editorPrefsServiceKey, "None") == servicesHash;
-            }
-
-            bool hasToGenerate = !fileExist || !servicesHashMatch;
-
-            if (!hasToGenerate)
+            
+            if (availableServices == null)
             {
                 return;
             }
             
-            Debug.Log($"[HomaBelly] Auto generating code for {serviceType} Services:{availableServices.Count}. File: {fileName}");
+            if (!force)
+            {
+                bool fileExist = File.Exists(completeFilePath);
+            
+                var servicesHash = string.Join(",", availableServices);
+
+                bool servicesHashMatch = false;
+                var editorPrefsServiceKey = $"Key{serviceType.Name}";
+                if (EditorPrefs.HasKey(editorPrefsServiceKey))
+                {
+                    var savedHash = EditorPrefs.GetString(editorPrefsServiceKey, "None");
+                    servicesHashMatch = savedHash == servicesHash;
+                }
+            
+                if (!servicesHashMatch)
+                {
+                    EditorPrefs.SetString(editorPrefsServiceKey,servicesHash);
+                }
+
+                bool hasToGenerate = !fileExist || !servicesHashMatch;
+
+                if (!hasToGenerate)
+                {
+                    return;
+                }
+            }
+
+            Debug.Log($"[HomaBelly] Auto generating code for {serviceType} Services: {string.Join(",", availableServices)}. File: {fileName}");
             if (!Directory.Exists(AUTO_GENERATED_SCRIPTS_PARENT_FOLDER))
             {
                 Directory.CreateDirectory(AUTO_GENERATED_SCRIPTS_PARENT_FOLDER);

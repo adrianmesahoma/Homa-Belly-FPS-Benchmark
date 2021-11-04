@@ -657,7 +657,6 @@ namespace HomaGames.HomaBelly
                     HomaGamesLog.Warning("No available attributions found");
                     return;
                 }
-                
                 // If Geryon Scope and Variant IDs are found, report it to all Attribution
                 string scopeId = "";
                 string variantId = "";
